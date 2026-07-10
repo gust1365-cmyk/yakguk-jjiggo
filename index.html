@@ -145,6 +145,10 @@ html,body{height:100%;font-family:-apple-system,'Malgun Gothic','Apple SD Gothic
 .emsg{font-size:11px;color:#c0392b;line-height:1.8;white-space:pre-line}
 /* ── 섹션 타이틀 ── */
 .sec{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 4px;font-weight:800;font-size:15px;color:var(--navy)}
+.dash-hero{background:linear-gradient(135deg,var(--mint),#00806e);border-radius:16px;padding:15px 16px;color:#fff;box-shadow:0 3px 10px rgba(0,176,155,.25)}
+.dash-cards{display:flex;gap:8px;margin-top:10px}
+.dash-card{flex:1;background:var(--wh);border:1px solid var(--bd);border-radius:14px;padding:11px 13px;cursor:pointer;transition:transform .1s}
+.dash-card:active{transform:scale(.97)}
 .sec-more{font-size:11px;color:var(--mint);cursor:pointer;font-weight:600}
 /* ── 카메라 ── */
 .cam-wrap{position:relative;margin:0 14px 10px;border-radius:14px;overflow:hidden;background:#000;min-height:0}
@@ -228,14 +232,32 @@ body.large-font input{font-size:16px!important;height:48px!important}
     </div>
   </div>
   <div class="scr" id="home-scr">
+    <!-- 홈 대시보드 -->
+    <div style="padding:12px 14px 0">
+      <div class="dash-hero">
+        <div style="font-size:11px;opacity:.85;font-weight:700" id="dash-date"></div>
+        <div style="font-size:17px;font-weight:900;margin-top:2px" id="dash-greet"></div>
+      </div>
+      <div class="dash-cards">
+        <div class="dash-card" onclick="go('pill')">
+          <div style="font-size:11px;color:var(--t3);font-weight:700">💊 복용 중인 약</div>
+          <div style="font-size:20px;font-weight:900;color:var(--navy);margin-top:3px"><span id="dash-pill">0</span><span style="font-size:12px;color:var(--t3);font-weight:700"> 개</span></div>
+        </div>
+        <div class="dash-card" onclick="go('dose')">
+          <div style="font-size:11px;color:var(--t3);font-weight:700">✅ 오늘 복용</div>
+          <div style="font-size:20px;font-weight:900;color:var(--mint);margin-top:3px" id="dash-dose">-</div>
+        </div>
+      </div>
+    </div>
+    <div class="sec" style="padding:14px 14px 8px">📸 약 봉투 분석</div>
     <!-- 카메라 UI: video는 switchToCamera() 시 동적 생성, 카메라 끄면 제거 -->
-    <div id="camSection" style="display:none;padding-top:10px">
+    <div id="camSection" style="display:none;padding-top:0">
       <div class="cam-wrap" id="camWrap"></div>
       <canvas id="camCanvas" style="display:none"></canvas>
     </div>
 
     <!-- 갤러리 UI -->
-    <div id="fileSection" style="padding-top:10px">
+    <div id="fileSection" style="padding-top:0">
       <div class="upa" id="upa" onclick="document.getElementById('fi').click()" ondragover="event.preventDefault()" ondrop="onDrop(event)">
         <img id="upimg" alt="">
         <div class="uico" id="upico">📸</div>
@@ -268,6 +290,12 @@ body.large-font input{font-size:16px!important;height:48px!important}
     <!-- 분석 결과 -->
     <div id="res-section" style="display:none">
       <!-- 결과가 동적으로 렌더됨 -->
+    </div>
+
+    <!-- 최근 분석 미리보기 -->
+    <div id="home-recent" style="padding:0 14px 4px;display:none">
+      <div class="sec" style="padding:12px 0 8px">📋 최근 분석 <span onclick="go('hist')" style="font-size:12px;color:var(--mint);font-weight:700;cursor:pointer">전체 보기 ›</span></div>
+      <div id="home-recent-list" style="display:flex;flex-direction:column;gap:7px"></div>
     </div>
 
     <!-- 홈 팁 -->
@@ -540,6 +568,7 @@ function go(tab){
   if(tab==='hist')renderHistList();
   if(tab==='pill')renderPills();
   if(tab==='dose')renderDoseTab();
+  if(tab==='home')renderHomeDash();
   if(tab!=='home')stopCamera();
 }
 /* 탭바 찍기 버튼: 홈으로 이동하되 갤러리 모드 유지 (카메라 자동 켜지 않음) */
@@ -1320,12 +1349,49 @@ function updateDoseBadge(){
   else{if(b)b.classList.remove('show');}
 }
 
+/* ══ 홈 대시보드 ══ */
+function renderHomeDash(){
+  var now=new Date();
+  var days=['일','월','화','수','목','금','토'];
+  var de=document.getElementById('dash-date');
+  if(de)de.textContent=(now.getMonth()+1)+'월 '+now.getDate()+'일 '+days[now.getDay()]+'요일';
+  var h=now.getHours();
+  var greet=h<6?'편안한 밤 되세요 🌙':h<12?'좋은 아침이에요 ☀️':h<18?'활기찬 오후 보내세요 😊':'편안한 저녁이에요 🌙';
+  var ge=document.getElementById('dash-greet');
+  if(ge)ge.textContent=greet;
+  var today=now.toISOString().slice(0,10);
+  var pills=(DB.pills||[]).filter(function(p){return !p.endDate||p.endDate>=today;}).length;
+  var pe=document.getElementById('dash-pill');
+  if(pe)pe.textContent=pills;
+  var logs=(DB.doseLog||[]).filter(function(l){return l.date===today;});
+  var done=logs.filter(function(l){return l.done;}).length;
+  var dd=document.getElementById('dash-dose');
+  if(dd)dd.textContent=logs.length>0?done+'/'+logs.length:'-';
+  var wrap=document.getElementById('home-recent'),list=document.getElementById('home-recent-list');
+  if(wrap&&list){
+    var hist=(DB.history||[]).slice(0,2);
+    if(hist.length===0){wrap.style.display='none';}
+    else{
+      wrap.style.display='block';
+      list.innerHTML=hist.map(function(it,i){
+        var names=(it.drugs||[]).slice(0,3).join(', ')||'분석 결과';
+        return '<div onclick="openHistDetail('+i+',\'\')" style="background:var(--wh);border:1px solid var(--bd);border-radius:12px;padding:12px 13px;cursor:pointer;display:flex;align-items:center;gap:10px">'
+          +'<div style="width:34px;height:34px;border-radius:10px;background:var(--mint-lt);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">💊</div>'
+          +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:800;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(names)+'</div>'
+          +'<div style="font-size:11px;color:var(--t3);margin-top:1px">'+esc(it.date||'')+'</div></div>'
+          +'<div style="color:var(--t3);font-size:14px">›</div></div>';
+      }).join('');
+    }
+  }
+}
+
 /* ══ 초기화 ══ */
 function renderAll(){
   updateHistBadge();
   updatePillBadge();
   updateDoseBadge();
   updateKeyStatus();
+  renderHomeDash();
   applyDark(_darkMode);
   applyFont(_largeFont);
 }
