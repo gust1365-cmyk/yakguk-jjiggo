@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>약국찍go</title>
+<script>try{if(localStorage.getItem('ygDarkMode')==='1'){document.documentElement.setAttribute('data-theme','dark');}}catch(e){}</script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f0f8f6;--wh:#fff;
+  --navy:#1a3a5e;--mint:#00b09b;--mint-lt:#e6f7f5;--mint-bd:#9de0d9;
+  --t1:#1a3a5e;--t2:#4a6a7e;--t3:#8aaaba;--bd:#cce0da;
+  --red:#e03e3e;--red-lt:#fff0f0;--red-bd:#ffb3b3;
+  --org:#f47b20;--org-lt:#fff3e8;--org-bd:#ffd9b3;
+  --grn:#2a9d6f;--grn-lt:#e6f7f1;--grn-bd:#a8dfc8;
+  --blu:#3a5bd4;--blu-lt:#eef2ff;--blu-bd:#c5d0f5;
+  --yel:#e8a000;--yel-lt:#fff8e0;--yel-bd:#f0d060;
+  --navy-solid:#1a3a5e;--icon-fill:#1a3a5e;--icon-detail:#fff
+}
+[data-theme="dark"]{
+  --bg:#111c27;--wh:#182433;
+  --navy:#d8eaf5;--mint:#00d4b8;--mint-lt:#0d2a26;--mint-bd:#1a4a44;
+  --t1:#d8eaf5;--t2:#7aaabb;--t3:#4a6a7a;--bd:#1e3344;
+  --red:#ff6b6b;--red-lt:#3a1a1a;--red-bd:#5c2626;
+  --org:#ff9142;--org-lt:#3a2c1c;--org-bd:#5a4326;
+  --grn:#3fbf8f;--grn-lt:#122a20;--grn-bd:#1f5c42;
+  --blu:#6f8fff;--blu-lt:#1b2340;--blu-bd:#2c3a66;
+  --yel:#f0c040;--yel-lt:#2a2200;--yel-bd:#5a4800;
+  --navy-solid:#1a3a5e;--icon-fill:#d8eaf5;--icon-detail:#111c27
+}
+html,body{height:100%;font-family:-apple-system,'Malgun Gothic','Apple SD Gothic Neo',sans-serif;font-size:14px;color:var(--t1);background:#888;overflow:hidden}
+.wrap{display:flex;gap:20px;justify-content:center;padding:20px 12px;min-height:100vh;flex-wrap:wrap}
+.phone{width:390px;height:844px;background:var(--wh);border-radius:46px;overflow:hidden;flex-shrink:0;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,.45),0 0 0 10px #1a1a1a,0 0 0 12px #3a3a3a;position:relative}
+@media(max-width:480px){
+  html,body{background:var(--wh);overflow:hidden;height:100%;height:100dvh;position:fixed;width:100%}
+  .wrap{padding:0;gap:0;width:100%;height:100%;height:100dvh;align-items:stretch;flex-direction:column;min-height:0}
+  .phone{width:100%!important;height:100%;border-radius:0;box-shadow:none;flex:1;min-height:0;overflow:hidden}
+}
+/* ── 뷰/스크롤 ── */
+.v{display:none;flex-direction:column;flex:1;overflow:hidden}.v.on{display:flex}
+.scr{flex:1;overflow-y:auto;background:var(--bg)}.scr::-webkit-scrollbar{display:none}
+/* ── 헤더 ── */
+.hd{padding:14px 16px 12px;background:var(--wh);border-bottom:1px solid var(--bd);flex-shrink:0}
+.hdr{display:flex;align-items:center;justify-content:space-between}
+.logo{font-size:24px;font-weight:900;color:var(--navy);letter-spacing:-.5px}.logo em{color:var(--mint);font-style:normal}
+.sub{font-size:11px;color:var(--t3);margin-top:1px}
+.ic{width:34px;height:34px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;color:var(--icon-fill)}
+/* ── 탭바 ── */
+.tbr{height:64px;border-top:1px solid var(--bd);background:var(--wh);display:flex;flex-shrink:0;padding-bottom:env(safe-area-inset-bottom,0)}
+.tab{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;border:none;background:transparent;font-family:inherit;padding:0;box-sizing:border-box;height:100%;position:relative}
+.ti{font-size:22px;line-height:1;width:28px;height:28px;display:flex;align-items:center;justify-content:center}
+.tl{font-size:10px;color:var(--t3);font-weight:600;line-height:1}.tab.on .tl{color:var(--mint);font-weight:800}
+.cam-tab{flex:1.2;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;border:none;background:transparent;gap:2px;padding:0;height:100%}
+.camc{width:50px;height:50px;border-radius:50%;background:linear-gradient(135deg,var(--mint),#007a6e);display:flex;align-items:center;justify-content:center;font-size:22px;box-shadow:0 4px 16px rgba(0,176,155,.45);margin-top:-14px}
+.cam-tab .tl{font-size:9px;color:var(--mint);font-weight:800;margin-top:1px}
+.tbadge{position:absolute;top:6px;right:calc(50% - 18px);background:var(--red);color:#fff;border-radius:10px;font-size:9px;font-weight:800;padding:1px 5px;min-width:16px;text-align:center;display:none}
+.tbadge.show{display:block}
+/* ── 공통 카드 ── */
+.card{background:var(--wh);border-radius:12px;border:1px solid var(--bd);margin:0 14px 10px;overflow:hidden}
+.card-hd{padding:10px 13px;font-size:12px;font-weight:800;color:var(--navy);border-bottom:1px solid var(--bg);display:flex;align-items:center;justify-content:space-between}
+/* ── 버튼 ── */
+.btn{display:flex;align-items:center;justify-content:center;height:48px;background:linear-gradient(135deg,var(--mint),#007a6e);color:#fff;border:none;border-radius:12px;font-size:14px;font-weight:900;cursor:pointer;width:100%;font-family:inherit}
+.btn:disabled{opacity:.32;cursor:not-allowed;background:var(--bd)}
+.btn-outline{height:38px;border:1.5px solid var(--mint);background:transparent;border-radius:9px;font-size:12px;font-weight:800;color:var(--mint);cursor:pointer;font-family:inherit;padding:0 14px}
+/* ── 업로드 영역 ── */
+.upa{margin:0 14px 10px;border:2.5px dashed var(--mint-bd);border-radius:14px;padding:22px 14px;text-align:center;cursor:pointer;background:var(--mint-lt);transition:all .15s}
+.upa.has{border-style:solid;border-color:var(--mint)}
+.upa img{width:100%;max-height:160px;object-fit:contain;border-radius:8px;margin-bottom:8px;border:1px solid var(--bd);display:none}
+.uico{font-size:38px;margin-bottom:6px}.utit{font-size:13px;font-weight:800;color:var(--navy);margin-bottom:3px}.usub{font-size:11px;color:var(--t3)}
+/* ── 로딩 ── */
+.anbox{margin:0 14px 10px;background:var(--mint-lt);border-radius:12px;border:1px solid var(--mint-bd);padding:20px;text-align:center;display:none}
+.spin{display:inline-block;width:36px;height:36px;border:4px solid var(--mint-bd);border-top-color:var(--mint);border-radius:50%;animation:sp .7s linear infinite;margin-bottom:10px}
+@keyframes sp{to{transform:rotate(360deg)}}
+.pg{height:4px;background:var(--mint-bd);border-radius:2px;margin:8px 0 4px;overflow:hidden}
+.pgf{height:100%;background:var(--mint);border-radius:2px;transition:width .4s}
+/* ── 분석 결과 카드 ── */
+.res-section{padding:0 0 0;display:none}
+.drug-card{background:var(--wh);border-radius:14px;border:1.5px solid var(--mint-bd);margin:0 14px 10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,176,155,.08)}
+.drug-hd{background:linear-gradient(135deg,var(--mint),#007a6e);padding:12px 14px;color:#fff;display:flex;align-items:center;justify-content:space-between}
+.drug-nm{font-size:15px;font-weight:900;letter-spacing:-.3px}
+.drug-purpose{font-size:11px;opacity:.85;margin-top:2px}
+.drug-body{padding:0}
+.drug-row{display:flex;align-items:flex-start;gap:10px;padding:9px 13px;border-bottom:1px solid var(--bg)}
+.drug-row:last-child{border-bottom:none}
+.drug-row-ico{font-size:17px;min-width:24px;text-align:center;margin-top:1px}
+.drug-row-body{flex:1}
+.drug-row-lbl{font-size:10px;font-weight:700;color:var(--t3);text-transform:uppercase;letter-spacing:.4px;margin-bottom:2px}
+.drug-row-val{font-size:13px;color:var(--t1);line-height:1.55}
+/* ── 경고/배지 ── */
+.warn-badge{display:inline-block;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;margin:2px 3px 2px 0}
+.warn-red{background:var(--red-lt);color:var(--red);border:1px solid var(--red-bd)}
+.warn-yel{background:var(--yel-lt);color:var(--yel);border:1px solid var(--yel-bd)}
+.warn-grn{background:var(--grn-lt);color:var(--grn);border:1px solid var(--grn-bd)}
+.warn-blu{background:var(--blu-lt);color:var(--blu);border:1px solid var(--blu-bd)}
+.urgent-banner{background:linear-gradient(135deg,#c0392b,#e74c3c);border-radius:12px;margin:0 14px 10px;padding:12px 14px;color:#fff;display:flex;gap:10px;align-items:flex-start}
+.summary-card{margin:0 14px 10px;background:var(--mint-lt);border:1.5px solid var(--mint-bd);border-radius:12px;padding:12px 14px}
+/* ── 검색창 ── */
+.sb{display:flex;align-items:center;background:var(--bg);border:1.5px solid var(--mint-bd);border-radius:10px;padding:0 10px;height:36px;gap:6px;margin:0 14px 10px;flex-shrink:0}
+.sb input{flex:1;border:none;background:transparent;font-size:13px;color:var(--t1);outline:none;font-family:inherit}.sb input::placeholder{color:var(--t3)}
+/* ── 이력 ── */
+.hist-card{background:var(--wh);border-radius:12px;border:1px solid var(--bd);margin:0 14px 8px;padding:13px 14px;cursor:pointer;position:relative;transition:all .12s}
+.hist-card:active{transform:scale(.98);background:var(--bg)}
+.hist-date{font-size:10px;color:var(--t3);font-weight:600;margin-bottom:4px}
+.hist-drugs{font-size:14px;font-weight:800;color:var(--navy);margin-bottom:3px;letter-spacing:-.3px}
+.hist-preview{font-size:11px;color:var(--t2);line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+/* ── 약장 ── */
+.pill-card{background:var(--wh);border-radius:12px;border:1px solid var(--bd);margin:0 14px 8px;overflow:visible;position:relative}
+.pill-item{display:flex;align-items:center;gap:10px;padding:9px 13px;border-bottom:1px solid var(--bg)}
+.pill-item:last-child{border-bottom:none}
+.pill-ico{font-size:22px;width:32px;text-align:center;flex-shrink:0}
+.pill-nm{font-size:13px;font-weight:800;color:var(--navy)}
+.pill-sub{font-size:11px;color:var(--t3);margin-top:1px;line-height:1.4}
+.pill-days{font-size:14px;font-weight:900;flex-shrink:0;text-align:right}
+.pill-bar{height:4px;border-radius:2px;margin-top:4px;background:var(--bg);overflow:hidden}
+.pill-bar-fill{height:100%;border-radius:2px;transition:width .4s}
+.badge-urgent{display:inline-block;background:var(--red-lt);color:var(--red);border:1px solid var(--red-bd);border-radius:20px;font-size:9px;font-weight:800;padding:1px 6px;margin-left:5px}
+.badge-done{display:inline-block;background:var(--mint-lt);color:var(--mint);border:1px solid var(--mint-bd);border-radius:20px;font-size:9px;font-weight:800;padding:1px 6px;margin-left:5px}
+/* ── 설정 ── */
+.setting-block{background:var(--wh);border-radius:12px;border:1px solid var(--bd);margin:0 14px 10px;overflow:hidden}
+.setting-row{display:flex;align-items:center;gap:10px;padding:13px;border-bottom:1px solid var(--bg)}
+.setting-row:last-child{border-bottom:none}
+.setting-row-ico{font-size:18px;width:24px;text-align:center}
+.setting-row-body{flex:1}.setting-row-title{font-size:13px;font-weight:700;color:var(--navy)}.setting-row-sub{font-size:11px;color:var(--t2);margin-top:2px}
+.key-input{width:100%;border:1.5px solid var(--bd);border-radius:8px;padding:9px 12px;font-size:13px;font-family:monospace;outline:none;color:var(--navy);background:var(--bg);letter-spacing:.5px}
+.key-input:focus{border-color:var(--mint)}
+.key-dot{width:8px;height:8px;border-radius:50%;background:var(--t3);display:inline-block;margin-right:5px}.key-dot.ok{background:#22c55e}
+/* ── 모달 ── */
+.modal{display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:200;align-items:flex-end}.modal.on{display:flex}
+.mbox{background:var(--wh);border-radius:24px 24px 0 0;width:100%;max-height:92%;display:flex;flex-direction:column}
+.mhd{display:flex;align-items:center;justify-content:space-between;padding:16px 18px 12px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.mttl{font-size:15px;font-weight:900;color:var(--navy)}.mcls{width:28px;height:28px;border-radius:50%;border:none;background:var(--bg);cursor:pointer;font-size:14px}
+.mbody{padding:14px 18px 20px;overflow-y:auto}.mbody::-webkit-scrollbar{display:none}
+/* 확인 모달 */
+.confirm-modal{display:none;position:absolute;inset:0;background:rgba(0,0,0,.5);z-index:300;align-items:center;justify-content:center}.confirm-modal.on{display:flex}
+.confirm-box{background:var(--wh);border-radius:16px;width:85%;max-width:320px;padding:20px 16px 14px;box-shadow:0 8px 32px rgba(0,0,0,.25)}
+/* ── 토스트 ── */
+.toast{position:absolute;bottom:76px;left:50%;transform:translateX(-50%);background:rgba(20,40,60,.93);color:#fff;font-size:12px;font-weight:700;padding:9px 16px;border-radius:28px;z-index:500;opacity:0;transition:opacity .28s;pointer-events:none;max-width:340px;text-align:center;white-space:nowrap}
+.toast.on{opacity:1}
+/* ── 면책 배너 ── */
+.disclaimer{margin:0 14px 10px;background:var(--yel-lt);border:1px solid var(--yel-bd);border-radius:10px;padding:8px 12px;font-size:10px;color:var(--yel);font-weight:700;display:flex;align-items:center;gap:6px}
+/* ── 오류박스 ── */
+.errbox{margin:0 14px 10px;border-radius:12px;padding:12px 14px;border:1.5px solid var(--red-bd);background:var(--red-lt);display:none}
+.etit{font-size:13px;font-weight:800;color:var(--red);margin-bottom:5px}
+.emsg{font-size:11px;color:#c0392b;line-height:1.8;white-space:pre-line}
+/* ── 섹션 타이틀 ── */
+.sec{display:flex;align-items:center;justify-content:space-between;padding:6px 14px 4px;font-weight:800;font-size:15px;color:var(--navy)}
+.sec-more{font-size:11px;color:var(--mint);cursor:pointer;font-weight:600}
+/* ── 카메라 ── */
+.cam-wrap{position:relative;margin:0 14px 10px;border-radius:14px;overflow:hidden;background:#000;min-height:0}
+.cam-video{width:100%;height:100%;object-fit:cover;display:block}
+.cam-overlay{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:16px;background:linear-gradient(transparent,rgba(0,0,0,.5))}
+.cam-btn{width:66px;height:66px;border-radius:50%;background:var(--wh);border:4px solid rgba(255,255,255,.8);cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(0,0,0,.5)}
+.cam-guide{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:88%;height:88%;border:2.5px solid rgba(255,255,255,.6);border-radius:12px;pointer-events:none}
+.cam-corner{position:absolute;width:22px;height:22px;border-color:var(--mint);border-style:solid;border-width:0}
+.cam-corner.tl{top:-1px;left:-1px;border-top-width:3px;border-left-width:3px;border-radius:4px 0 0 0}
+.cam-corner.tr{top:-1px;right:-1px;border-top-width:3px;border-right-width:3px;border-radius:0 4px 0 0}
+.cam-corner.bl{bottom:-1px;left:-1px;border-bottom-width:3px;border-left-width:3px;border-radius:0 0 0 4px}
+.cam-corner.br{bottom:-1px;right:-1px;border-bottom-width:3px;border-right-width:3px;border-radius:0 0 4px 0}
+.cam-switch{position:absolute;top:10px;right:10px;width:36px;height:36px;border-radius:50%;background:rgba(0,0,0,.5);border:none;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center}
+.cam-tip{font-size:11px;color:rgba(255,255,255,.85);text-align:center;margin-bottom:10px}
+/* ── 탭 전환 버튼 ── */
+.tab-btn{flex:1;height:32px;border:1.5px solid var(--bd);border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--bg);color:var(--t2);transition:all .15s}
+.tab-btn.on{border-color:var(--mint);background:var(--mint-lt);color:var(--mint)}
+/* ── 큰글씨 ── */
+body.large-font{font-size:18px!important}
+body.large-font .drug-nm{font-size:18px!important}
+body.large-font .drug-row-val{font-size:16px!important}
+body.large-font .hist-drugs{font-size:17px!important}
+body.large-font .hist-date{font-size:13px!important}
+body.large-font .pill-nm{font-size:16px!important}
+body.large-font .pill-sub{font-size:14px!important}
+body.large-font .pill-days{font-size:17px!important}
+body.large-font .setting-row-title{font-size:16px!important}
+body.large-font .setting-row-sub{font-size:14px!important}
+body.large-font .warn-badge{font-size:14px!important;padding:4px 10px!important}
+body.large-font .tl{font-size:12px!important}
+body.large-font .ti{font-size:26px!important}
+body.large-font .tbr{height:70px!important}
+body.large-font .tab{height:70px!important}
+body.large-font .cam-tab{height:70px!important}
+body.large-font .camc{width:54px!important;height:54px!important}
+body.large-font .sec{font-size:18px!important}
+body.large-font .card-hd{font-size:15px!important}
+body.large-font .drug-row-lbl{font-size:12px!important}
+body.large-font button{min-height:50px!important;font-size:16px!important}
+body.large-font button[style*="border-radius:50%"],
+body.large-font .mcls,
+body.large-font .ic{min-height:unset!important;height:auto!important}
+body.large-font input{font-size:16px!important;height:48px!important}
+/* ── 알림 칩 ── */
+.alarm-chip{padding:7px 12px;border-radius:20px;font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--bd);background:var(--bg);color:var(--t2);transition:all .15s;white-space:nowrap}
+.alarm-chip.on{background:var(--mint-lt);color:var(--mint);border-color:var(--mint-bd)}
+/* ── 복용기록 바 ── */
+.dose-day-bar{display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--bg)}
+.dose-day-bar:last-child{border-bottom:none}
+.dose-day-lbl{font-size:11px;color:var(--t2);width:28px;flex-shrink:0;font-weight:700}
+.dose-bar-track{flex:1;height:20px;background:var(--bg);border-radius:6px;overflow:hidden}
+.dose-bar-fill{height:100%;border-radius:6px;display:flex;align-items:center;padding-left:8px;font-size:10px;font-weight:800;color:#fff;transition:width .5s}
+.dose-pct{font-size:11px;font-weight:800;color:var(--navy);width:36px;text-align:right;flex-shrink:0}
+/* ── 토글 스위치 ── */
+.toggle{width:52px;height:28px;border-radius:14px;background:var(--bd);cursor:pointer;position:relative;transition:background .2s;flex-shrink:0}
+.toggle-thumb{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;box-shadow:0 1px 4px rgba(0,0,0,.2);transition:left .2s}
+</style>
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00b09b">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="약국찍go">
+</head>
+<body>
+<div class="wrap">
+<div class="phone">
+
+<!-- ══ 홈 탭 (찍기) ══ -->
+<div class="v on" id="v-home">
+  <div class="hd">
+    <div class="hdr">
+      <div><div class="logo">💊 약국찍<em>go</em></div><div class="sub">약 봉투 · 처방전을 찍으면 AI가 정리해드려요</div></div>
+      <div style="display:flex;gap:6px">
+        <button class="ic" onclick="openSettingModal()" title="설정">⚙️</button>
+      </div>
+    </div>
+    <!-- 카메라/파일 탭 전환 -->
+    <div style="display:flex;gap:6px;margin-top:10px">
+      <button class="tab-btn" id="camTabBtn" onclick="switchToCamera()">📷 카메라 촬영</button>
+      <button class="tab-btn on" id="fileTabBtn" onclick="switchToFile()">🖼️ 갤러리 선택</button>
+    </div>
+  </div>
+  <div class="scr" id="home-scr">
+    <!-- 카메라 UI: video는 switchToCamera() 시 동적 생성, 카메라 끄면 제거 -->
+    <div id="camSection" style="display:none;padding-top:10px">
+      <div class="cam-wrap" id="camWrap"></div>
+      <canvas id="camCanvas" style="display:none"></canvas>
+    </div>
+
+    <!-- 갤러리 UI -->
+    <div id="fileSection" style="padding-top:10px">
+      <div class="upa" id="upa" onclick="document.getElementById('fi').click()" ondragover="event.preventDefault()" ondrop="onDrop(event)">
+        <img id="upimg" alt="">
+        <div class="uico" id="upico">📸</div>
+        <div class="utit" id="uptit">약 봉투 / 처방전 선택</div>
+        <div class="usub" id="upsub">탭 또는 드래그 · JPG · PNG · HEIC</div>
+      </div>
+      <input type="file" id="fi" accept="image/*" style="display:none" onchange="onFileSel(event)">
+    </div>
+
+    <!-- 로딩 -->
+    <div class="anbox" id="anbox">
+      <div class="spin"></div>
+      <div style="font-size:14px;font-weight:800;color:var(--navy)" id="antit">💊 AI가 약 정보를 분석 중이에요</div>
+      <div id="loadMsg" style="font-size:11px;color:var(--t2);margin-top:4px;min-height:16px">잠깐만요~</div>
+      <div class="pg"><div class="pgf" id="pgf" style="width:0%"></div></div>
+    </div>
+
+    <!-- 오류 -->
+    <div class="errbox" id="errbox"><div class="etit">⚠️ <span id="etit2">오류</span></div><div class="emsg" id="emsg"></div></div>
+
+    <!-- 분석 버튼 -->
+    <div style="padding:0 14px 8px">
+      <button class="btn" id="mbtn" onclick="onBtn()" disabled>🤖 AI로 약 정보 분석하기</button>
+      <div style="font-size:10px;color:var(--t3);text-align:center;margin-top:5px" id="mbtntip">이미지 선택 → AI 분석 → 결과 확인</div>
+    </div>
+
+    <!-- 면책 배너 -->
+    <div class="disclaimer">⚠️<span>이 앱은 참고용이며 의사·약사의 처방을 대체하지 않습니다. 정확한 복용법은 반드시 전문가에게 확인하세요.</span></div>
+
+    <!-- 분석 결과 -->
+    <div id="res-section" style="display:none">
+      <!-- 결과가 동적으로 렌더됨 -->
+    </div>
+
+    <!-- 홈 팁 -->
+    <div id="home-tip" style="padding:0 14px 16px">
+      <div class="sec" style="padding:10px 0 8px">💡 잘 찍는 법</div>
+      <div style="display:flex;flex-direction:column;gap:7px">
+        <div style="background:var(--wh);border-radius:10px;border:1px solid var(--bd);padding:11px 13px;display:flex;gap:10px;align-items:center">
+          <span style="font-size:20px">☀️</span>
+          <div style="font-size:12px;color:var(--t2);line-height:1.5"><b style="color:var(--navy)">밝은 곳</b>에서 약 봉투 전체가 보이도록</div>
+        </div>
+        <div style="background:var(--wh);border-radius:10px;border:1px solid var(--bd);padding:11px 13px;display:flex;gap:10px;align-items:center">
+          <span style="font-size:20px">📄</span>
+          <div style="font-size:12px;color:var(--t2);line-height:1.5"><b style="color:var(--navy)">처방전 전체</b>를 한 장에 담으면 더 정확해요</div>
+        </div>
+        <div style="background:var(--wh);border-radius:10px;border:1px solid var(--bd);padding:11px 13px;display:flex;gap:10px;align-items:center">
+          <span style="font-size:20px">🔍</span>
+          <div style="font-size:12px;color:var(--t2);line-height:1.5">글자가 흐리면 <b style="color:var(--navy)">가까이</b> 당겨서 다시 찍어보세요</div>
+        </div>
+      </div>
+    </div>
+    <div style="height:8px"></div>
+  </div>
+</div>
+
+<!-- ══ 이력 탭 ══ -->
+<div class="v" id="v-hist">
+  <div class="hd">
+    <div class="hdr"><div class="logo" style="font-size:18px">📋 분석 이력</div><div id="hist-cnt" style="font-size:13px;color:var(--t2);font-weight:800"></div></div>
+    <div class="sb" style="margin:8px 0 0"><span style="color:var(--t3)">🔍</span><input id="hist-search" placeholder="약품명 검색…" oninput="renderHistList()" autocomplete="off"><span id="hist-clear" style="cursor:pointer;color:var(--t3);display:none" onclick="clearHistSearch()">✕</span></div>
+  </div>
+  <div class="scr" id="hist-list" style="padding-top:10px">
+    <!-- 동적 렌더 -->
+  </div>
+</div>
+
+<!-- ══ 약장 탭 ══ -->
+<div class="v" id="v-pill">
+  <div class="hd">
+    <div class="hdr">
+      <div class="logo" style="font-size:18px">💊 내 약장</div>
+      <button onclick="openPillAddModal()" style="height:30px;padding:0 12px;background:var(--mint);color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit">+ 추가</button>
+    </div>
+  </div>
+  <div class="scr" style="padding-top:10px">
+    <div id="pill-urgent-banner" style="display:none"></div>
+    <div class="sec">💊 복용 중인 약</div>
+    <div id="pill-list"></div>
+    <div class="sec" style="margin-top:4px">📋 복용 안내</div>
+    <div style="padding:0 14px 16px;display:flex;flex-direction:column;gap:7px" id="pill-guide">
+      <div style="background:var(--wh);border-radius:10px;border:1px solid var(--bd);padding:11px 13px;font-size:11px;color:var(--t2);line-height:1.7">
+        💡 <b style="color:var(--navy)">약 복용 TIP</b><br>
+        • 식사 시간을 지켜 복용하세요<br>
+        • 하루 빠뜨렸다면 다음 복용 시 두 배로 먹지 마세요<br>
+        • 복용 중 이상 증상이 생기면 즉시 약사/의사에게 상담하세요
+      </div>
+    </div>
+    <div style="height:10px"></div>
+  </div>
+</div>
+
+<!-- ══ 복용관리 탭 ══ -->
+<div class="v" id="v-dose">
+  <div class="hd">
+    <div class="hdr">
+      <div class="logo" style="font-size:18px">📅 복용관리</div>
+      <div style="display:flex;gap:6px">
+        <button onclick="openSettingModal()" style="height:28px;padding:0 10px;background:var(--bg);color:var(--t2);border:1px solid var(--bd);border-radius:8px;font-size:11px;font-weight:700;cursor:pointer;font-family:inherit">⚙️ 설정</button>
+      </div>
+    </div>
+    <!-- 알림/기록 서브탭 -->
+    <div style="display:flex;gap:6px;margin-top:10px">
+      <button class="tab-btn on" id="doseTabAlarm" onclick="switchDoseTab('alarm')">🔔 복용알림</button>
+      <button class="tab-btn" id="doseTabLog" onclick="switchDoseTab('log')">📊 복용기록</button>
+    </div>
+  </div>
+  <div class="scr" style="padding-top:10px">
+
+    <!-- ── 복용알림 서브뷰 ── -->
+    <div id="dose-alarm-view">
+      <div id="alarm-urgent-wrap" style="display:none"></div>
+      <div class="sec">🔔 오늘 복용 일정<span class="sec-more" onclick="openAlarmModal()">+ 알림 추가</span></div>
+      <div id="alarm-list"></div>
+      <div class="sec" style="margin-top:4px">💊 복용 중인 약 현황</div>
+      <div id="alarm-pill-summary"></div>
+      <div style="margin:0 14px 10px;padding:10px 13px;background:var(--wh);border-radius:10px;border:1px solid var(--bd);font-size:11px;color:var(--t2);line-height:1.7">
+        💡 약 봉투를 분석하면 <b style="color:var(--navy)">약장 탭</b>에서 약을 추가하고<br>여기서 복용 시간 알림을 설정할 수 있어요.
+      </div>
+    </div>
+
+    <!-- ── 복용기록 서브뷰 ── -->
+    <div id="dose-log-view" style="display:none">
+      <div class="sec">📊 이번 주 복용률</div>
+      <div id="dose-rate-card" style="margin:0 14px 10px;background:var(--wh);border-radius:12px;border:1px solid var(--bd);padding:14px"></div>
+      <div class="sec">📋 복용 기록 <span class="sec-more" onclick="clearDoseLog()">전체 초기화</span></div>
+      <div id="dose-log-list"></div>
+    </div>
+
+    <div style="height:16px"></div>
+  </div>
+</div>
+
+<!-- ══ 탭바 ══ -->
+<div class="tbr">
+  <button class="tab on" id="t-home" onclick="go('home')"><div class="ti">🏠</div><div class="tl">홈</div></button>
+  <button class="tab" id="t-hist" onclick="go('hist')"><div class="ti">📋</div><div class="tl" id="hist-lbl">이력</div><span class="tbadge" id="hist-badge"></span></button>
+  <button class="cam-tab" onclick="goHome()"><div class="camc">📷</div><div class="tl">찍기</div></button>
+  <button class="tab" id="t-pill" onclick="go('pill')"><div class="ti">💊</div><div class="tl" id="pill-lbl">약장</div><span class="tbadge" id="pill-badge"></span></button>
+  <button class="tab" id="t-dose" onclick="go('dose')"><div class="ti">📅</div><div class="tl" id="dose-lbl">복용관리</div><span class="tbadge" id="dose-badge"></span></button>
+</div>
+
+</div><!-- /phone -->
+</div><!-- /wrap -->
+
+<!-- ══ 이력 상세 모달 ══ -->
+<div class="modal" id="hist-detail-modal" onclick="if(event.target===this)closeHistDetail()">
+  <div class="mbox" style="max-height:90%">
+    <div class="mhd"><div class="mttl" id="hist-detail-title">상세 보기</div><button class="mcls" onclick="closeHistDetail()">✕</button></div>
+    <div class="mbody" id="hist-detail-body"></div>
+  </div>
+</div>
+
+<!-- ══ 약장 추가 모달 ══ -->
+<div class="modal" id="pill-add-modal" onclick="if(event.target===this)closePillModal()">
+  <div class="mbox">
+    <div class="mhd"><div class="mttl">💊 약장에 추가</div><button class="mcls" onclick="closePillModal()">✕</button></div>
+    <div class="mbody">
+      <div style="margin-bottom:10px"><div style="font-size:11px;color:var(--t2);margin-bottom:5px;font-weight:700">약품명</div><input id="pill-name" class="key-input" placeholder="예: 타이레놀, 아목시실린…" style="font-family:inherit;font-size:13px;letter-spacing:0"></div>
+      <div style="margin-bottom:10px"><div style="font-size:11px;color:var(--t2);margin-bottom:5px;font-weight:700">복용 방법</div><input id="pill-dosage" class="key-input" placeholder="예: 1정 하루 3회 식후 30분" style="font-family:inherit;font-size:13px;letter-spacing:0"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+        <div><div style="font-size:11px;color:var(--t2);margin-bottom:5px;font-weight:700">복용 시작일</div><input id="pill-start" class="key-input" type="date" style="font-family:inherit;font-size:12px;letter-spacing:0"></div>
+        <div><div style="font-size:11px;color:var(--t2);margin-bottom:5px;font-weight:700">복용 기간 (일)</div><input id="pill-days" class="key-input" type="number" min="1" placeholder="7" style="font-family:inherit;font-size:13px;letter-spacing:0"></div>
+      </div>
+      <button onclick="addPillItem()" style="width:100%;height:44px;background:var(--mint);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit">💊 약장에 추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 알림 추가 모달 ══ -->
+<div class="modal" id="alarm-add-modal" onclick="if(event.target===this)closeAlarmModal()">
+  <div class="mbox">
+    <div class="mhd"><div class="mttl">🔔 복용 알림 추가</div><button class="mcls" onclick="closeAlarmModal()">✕</button></div>
+    <div class="mbody">
+      <div style="margin-bottom:10px"><div style="font-size:11px;color:var(--t2);margin-bottom:5px;font-weight:700">약품명</div>
+        <select id="alarm-pill-select" class="key-input" style="font-family:inherit;font-size:13px;letter-spacing:0;-webkit-appearance:none">
+          <option value="">— 약장에서 선택 —</option>
+        </select>
+      </div>
+      <div style="margin-bottom:10px"><div style="font-size:11px;color:var(--t2);margin-bottom:5px;font-weight:700">복용 시간</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px" id="alarm-time-chips">
+          <div class="alarm-chip" onclick="toggleAlarmChip(this,'08:00')">🌅 아침 08:00</div>
+          <div class="alarm-chip" onclick="toggleAlarmChip(this,'12:00')">☀️ 점심 12:00</div>
+          <div class="alarm-chip" onclick="toggleAlarmChip(this,'18:00')">🌇 저녁 18:00</div>
+          <div class="alarm-chip" onclick="toggleAlarmChip(this,'21:00')">🌙 취침 21:00</div>
+        </div>
+        <input id="alarm-custom-time" type="time" class="key-input" style="margin-top:8px;font-family:inherit;font-size:13px;letter-spacing:0" placeholder="직접 입력">
+      </div>
+      <button onclick="addAlarm()" style="width:100%;height:44px;background:var(--mint);color:#fff;border:none;border-radius:10px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit">🔔 알림 추가</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 설정 모달 ══ -->
+<div class="modal" id="setting-modal" onclick="if(event.target===this)closeSettingModal()">
+  <div class="mbox" style="max-height:90%">
+    <div class="mhd"><div class="mttl">⚙️ 설정</div><button class="mcls" onclick="closeSettingModal()">✕</button></div>
+    <div class="mbody">
+      <div style="margin-bottom:12px;padding:10px 12px;background:var(--grn-lt);border:1px solid var(--grn-bd);border-radius:9px;font-size:12px;color:var(--grn);font-weight:700">🔒 AI 분석은 서버에서 안전하게 처리됩니다</div>
+      <div style="height:1px;background:var(--bd);margin-bottom:16px"></div>
+      <div style="font-size:11px;font-weight:800;color:var(--t3);margin-bottom:10px">🖥️ 화면 설정</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:var(--navy)">🌙 다크모드</div>
+        <div class="toggle" id="darkToggle" onclick="toggleDark()"><div class="toggle-thumb" id="darkThumb"></div></div>
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:700;color:var(--navy)">🔤 큰글씨 모드</div>
+        <div class="toggle" id="fontToggle" onclick="toggleFont()"><div class="toggle-thumb" id="fontThumb"></div></div>
+      </div>
+      <div style="height:1px;background:var(--bd);margin-bottom:16px"></div>
+      <div style="font-size:11px;font-weight:800;color:var(--t3);margin-bottom:10px">🗑️ 데이터 관리</div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <button onclick="closeSettingModal();showConfirm('🗑️ 이력 전체 삭제','저장된 분석 이력이 모두 삭제됩니다.','삭제',clearHistory)" style="width:100%;height:40px;background:var(--red-lt);color:var(--red);border:1px solid var(--red-bd);border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit">🗑️ 분석 이력 전체 삭제</button>
+        <button onclick="closeSettingModal();showConfirm('💊 약장 초기화','복용 중인 약이 모두 삭제됩니다.','초기화',clearPills)" style="width:100%;height:40px;background:var(--red-lt);color:var(--red);border:1px solid var(--red-bd);border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit">💊 약장 초기화</button>
+      </div>
+      <div style="height:1px;background:var(--bd);margin:16px 0"></div>
+      <div style="font-size:11px;color:var(--t3);text-align:center;line-height:1.7">💊 약국찍go v1.0.0 · by. s치서<br>Claude claude-sonnet-4-6 기반 · 의료 면책 적용</div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ 확인 모달 ══ -->
+<div class="confirm-modal" id="confirm-modal">
+  <div class="confirm-box">
+    <div style="font-size:15px;font-weight:700;color:var(--navy);text-align:center;margin-bottom:6px" id="confirm-msg"></div>
+    <div style="font-size:12px;color:var(--t2);text-align:center;margin-bottom:16px;line-height:1.5;white-space:pre-line" id="confirm-sub"></div>
+    <div style="display:flex;gap:8px">
+      <button onclick="doCancelConfirm()" style="flex:1;height:40px;border:1.5px solid var(--bd);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--bg);color:var(--t2)">취소</button>
+      <button onclick="doConfirm()" id="confirm-ok-btn" style="flex:1;height:40px;border:none;border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit;background:var(--red);color:#fff">확인</button>
+    </div>
+  </div>
+</div>
+
+<!-- 토스트 -->
+<div class="toast" id="toast"></div>
+
+<script>
+'use strict';
+
+/* ══════════════════════════════════════════
+   DB
+══════════════════════════════════════════ */
+var DB = { history:[], pills:[], alarms:[], doseLog:[] };
+(function(){
+  try{
+    var s=localStorage.getItem('ygv1');
+    if(s){ var p=JSON.parse(s); DB.history=p.history||[]; DB.pills=p.pills||[]; DB.alarms=p.alarms||[]; DB.doseLog=p.doseLog||[]; }
+  }catch(e){}
+})();
+function saveDB(){ try{localStorage.setItem('ygv1',JSON.stringify(DB));}catch(e){} }
+
+/* ══ 상태 ══ */
+var _b64=null, _mime='image/jpeg', _state='idle', _result=null;
+var _camStream=null, _camFacing='environment';
+var _darkMode=false, _largeFont=false;
+var _confirmCb=null;
+var _toastTimer=null;
+
+/* ══ 반응형 글자크기 ══ */
+function fs(s,l){ return _largeFont?l:s; }
+
+/* ══ 다크모드 ══ */
+(function(){
+  try{
+    if(localStorage.getItem('ygDarkMode')==='1'){_darkMode=true;}
+    if(localStorage.getItem('ygLargeFont')==='1'){_largeFont=true;}
+  }catch(e){}
+  applyDark(_darkMode);
+  applyFont(_largeFont);
+})();
+
+function toggleDark(){
+  _darkMode=!_darkMode;
+  applyDark(_darkMode);
+  try{localStorage.setItem('ygDarkMode',_darkMode?'1':'0');}catch(e){}
+  toast(_darkMode?'🌙 다크모드 ON':'☀️ 라이트모드');
+}
+function applyDark(on){
+  var tg=document.getElementById('darkToggle'),th=document.getElementById('darkThumb');
+  if(on){document.documentElement.setAttribute('data-theme','dark');if(tg)tg.style.background='var(--mint)';if(th)th.style.left='27px';}
+  else{document.documentElement.removeAttribute('data-theme');if(tg)tg.style.background='';if(th)th.style.left='3px';}
+}
+function toggleFont(){
+  _largeFont=!_largeFont;
+  applyFont(_largeFont);
+  try{localStorage.setItem('ygLargeFont',_largeFont?'1':'0');}catch(e){}
+  toast(_largeFont?'🔤 큰글씨 모드 ON':'🔤 일반 모드');
+}
+function applyFont(on){
+  var tg=document.getElementById('fontToggle'),th=document.getElementById('fontThumb');
+  if(on){document.body.classList.add('large-font');if(tg)tg.style.background='var(--mint)';if(th)th.style.left='27px';}
+  else{document.body.classList.remove('large-font');if(tg)tg.style.background='';if(th)th.style.left='3px';}
+}
+
+/* ══ 탭 이동 ══ */
+function go(tab){
+  document.querySelectorAll('.v').forEach(function(v){v.classList.remove('on');});
+  document.querySelectorAll('.tab,.cam-tab').forEach(function(t){t.classList.remove('on');});
+  var v=document.getElementById('v-'+tab), t=document.getElementById('t-'+tab);
+  if(v)v.classList.add('on');
+  if(t)t.classList.add('on');
+  if(tab==='hist')renderHistList();
+  if(tab==='pill')renderPills();
+  if(tab==='dose')renderDoseTab();
+  if(tab!=='home')stopCamera();
+}
+/* 탭바 찍기 버튼: 홈으로 이동하되 갤러리 모드 유지 (카메라 자동 켜지 않음) */
+function goHome(){
+  stopCamera();
+  go('home');
+  // 갤러리 모드로 강제 전환 (카메라가 켜진 상태였다면 파일 모드로)
+  document.getElementById('camSection').style.display='none';
+  document.getElementById('fileSection').style.display='block';
+  var c=document.getElementById('camTabBtn'),f=document.getElementById('fileTabBtn');
+  if(c){c.classList.remove('on');}
+  if(f){f.classList.add('on');}
+}
+
+/* ══ 카메라 / 갤러리 전환 ══ */
+function switchToCamera(){
+  document.getElementById('camSection').style.display='block';
+  document.getElementById('fileSection').style.display='none';
+  var c=document.getElementById('camTabBtn'),f=document.getElementById('fileTabBtn');
+  c.classList.add('on');f.classList.remove('on');
+  startCamera();
+}
+function switchToFile(){
+  stopCamera();
+  document.getElementById('camSection').style.display='none';
+  document.getElementById('fileSection').style.display='block';
+  var c=document.getElementById('camTabBtn'),f=document.getElementById('fileTabBtn');
+  f.classList.add('on');c.classList.remove('on');
+}
+
+/* ══ 카메라 ══ */
+async function startCamera(){
+  var wrap=document.getElementById('camWrap');
+  if(!wrap)return;
+  // 기존 스트림 완전 정리
+  stopCamera();
+  wrap.style.aspectRatio='3/4';
+  // video 엘리먼트 동적 생성 (autoplay는 JS로만, DOM에 미리 없음)
+  wrap.innerHTML='<div style="padding:30px;text-align:center;color:rgba(255,255,255,.7);font-size:13px">카메라 연결 중...</div>';
+  try{
+    var stream=null;
+    var tries=[
+      {video:{facingMode:{exact:'environment'},width:{ideal:1920},height:{ideal:1080}},audio:false},
+      {video:{facingMode:'environment'},audio:false},
+      {video:true,audio:false}
+    ];
+    for(var i=0;i<tries.length;i++){try{stream=await navigator.mediaDevices.getUserMedia(tries[i]);break;}catch(e){}}
+    if(!stream)throw new Error('카메라 접근 불가');
+    _camStream=stream;
+    // 이제 video 생성 및 삽입
+    var video=document.createElement('video');
+    video.id='camVideo';video.className='cam-video';
+    video.setAttribute('autoplay','');video.setAttribute('playsinline','');video.setAttribute('muted','');
+    video.srcObject=stream;
+    wrap.innerHTML='';
+    wrap.appendChild(video);
+    // 가이드/오버레이/스위치 버튼 추가
+    wrap.insertAdjacentHTML('beforeend',
+      '<div class="cam-guide"><div class="cam-corner tl"></div><div class="cam-corner tr"></div><div class="cam-corner bl"></div><div class="cam-corner br"></div></div>'+
+      '<div class="cam-overlay"><div class="cam-tip">약 봉투 또는 처방전을 가이드 안에 맞추세요</div>'+
+      '<button class="cam-btn" onclick="capturePhoto()"><div style="width:28px;height:28px;border-radius:50%;background:var(--red);border:3px solid rgba(255,255,255,.9)"></div></button></div>'+
+      '<button class="cam-switch" onclick="switchCamera()">🔄</button>'
+    );
+    await video.play();
+  }catch(e){
+    wrap.innerHTML='<div style="padding:30px;text-align:center;color:var(--t3)"><div style="font-size:36px;margin-bottom:10px">📷</div><div style="font-size:12px;font-weight:700">카메라 접근 불가<br>'+e.message+'</div><div style="font-size:11px;margin-top:8px">갤러리에서 사진을 선택해주세요</div></div>';
+  }
+}
+function stopCamera(){
+  if(_camStream){_camStream.getTracks().forEach(function(t){t.stop();});_camStream=null;}
+  // video 엘리먼트 자체를 DOM에서 제거 (srcObject 해제 후)
+  var v=document.getElementById('camVideo');
+  if(v){v.srcObject=null;v.load();v.remove();}
+  // camWrap 비우기 (가이드/오버레이 포함)
+  var wrap=document.getElementById('camWrap');
+  if(wrap){wrap.innerHTML='';wrap.style.aspectRatio='';}  
+}
+function switchCamera(){
+  _camFacing=_camFacing==='environment'?'user':'environment';
+  startCamera();
+}
+function capturePhoto(){
+  var video=document.getElementById('camVideo'),canvas=document.getElementById('camCanvas');
+  if(!video||!video.videoWidth){toast('❗ 카메라 준비 중');return;}
+  canvas.width=video.videoWidth;canvas.height=video.videoHeight;
+  canvas.getContext('2d').drawImage(video,0,0);
+  canvas.toBlob(function(blob){
+    if(!blob){toast('❗ 캡처 실패');return;}
+    var file=new File([blob],'cam_'+Date.now()+'.jpg',{type:'image/jpeg'});
+    stopCamera();switchToFile();loadImg(file);
+    toast('✅ 촬영 완료! 분석 버튼을 눌러주세요');
+  },'image/jpeg',0.92);
+}
+
+/* ══ 파일 선택 ══ */
+function onDrop(e){e.preventDefault();var f=e.dataTransfer.files[0];if(f)loadImg(f);}
+function onFileSel(e){var f=e.target.files[0];if(f)loadImg(f);e.target.value='';}
+function loadImg(file){
+  var mime=file.type||'image/jpeg';
+  var reader=new FileReader();
+  reader.onload=function(ev){
+    var du=ev.target.result;
+    var img=new Image();
+    img.onload=function(){
+      var MAX=1600,Q=0.88,w=img.width,h=img.height;
+      if(w>MAX||h>MAX){var r=Math.min(MAX/w,MAX/h);w=Math.round(w*r);h=Math.round(h*r);}
+      var cv=document.createElement('canvas');cv.width=w;cv.height=h;
+      cv.getContext('2d').drawImage(img,0,0,w,h);
+      var comp=cv.toDataURL('image/jpeg',Q);
+      _b64=comp.split(',')[1];_mime='image/jpeg';
+      document.getElementById('upimg').src=comp;
+      document.getElementById('upimg').style.display='block';
+      document.getElementById('upico').style.display='none';
+      document.getElementById('uptit').textContent=file.name;
+      document.getElementById('upsub').textContent='✅ '+Math.round(_b64.length*3/4/1024)+'KB 준비됨';
+      document.getElementById('upa').classList.add('has');
+      _state='loaded';_result=null;
+      setBtn('analyze');
+      hideResult();
+      document.getElementById('errbox').style.display='none';
+      toast('✅ 이미지 준비 완료! 분석 버튼을 눌러주세요');
+    };
+    img.src=du;
+  };
+  reader.readAsDataURL(file);
+}
+
+/* ══ 버튼 상태 ══ */
+function setBtn(m){
+  var b=document.getElementById('mbtn');
+  if(m==='idle'){b.disabled=true;b.style.opacity='.32';b.textContent='🤖 AI로 약 정보 분석하기';}
+  else if(m==='analyze'){b.disabled=false;b.style.opacity='1';b.textContent='🤖 AI로 약 정보 분석하기';}
+  else if(m==='loading'){b.disabled=true;b.style.opacity='.5';b.textContent='⏳ 분석 중...';}
+}
+function onBtn(){if(_state==='loaded'||_state==='analyzed')startAI();}
+
+/* ══ AI 분석 ══ */
+var LOAD_MSGS=['약 봉투를 꼼꼼히 읽는 중...','성분과 함량 확인 중...','복용법 분석 중...','주의사항 정리 중...','거의 다 됐어요! ✨'];
+async function startAI(){
+  if(!_b64){toast('❗ 이미지를 먼저 선택하세요');return;}
+  setBtn('loading');
+  document.getElementById('anbox').style.display='block';
+  document.getElementById('errbox').style.display='none';
+  hideResult();
+  var si=0,iv=setInterval(function(){
+    if(si<LOAD_MSGS.length){
+      setPg(Math.min(90,si*20+10),LOAD_MSGS[si]);si++;
+    }
+  },900);
+  try{
+    var raw=await callClaude(null,_b64,_mime);
+    clearInterval(iv);setPg(100,'✅ 분석 완료!');
+    await new Promise(function(r){setTimeout(r,300);});
+    document.getElementById('anbox').style.display='none';
+    var parsed=parseAI(raw);
+    if(!parsed)throw new Error('PARSE_FAIL');
+    _result=parsed;_state='analyzed';
+    renderResult(parsed,true);
+    setBtn('analyze');
+    toast('✅ 분석 완료! '+(parsed.drugs||[]).length+'개 약품 인식');
+  }catch(e){
+    clearInterval(iv);
+    document.getElementById('anbox').style.display='none';
+    document.getElementById('errbox').style.display='block';
+    document.getElementById('etit2').textContent='분석 오류';
+    document.getElementById('emsg').textContent=getErrMsg(e.message);
+    setBtn('analyze');
+  }
+}
+function setPg(p,s){
+  document.getElementById('pgf').style.width=p+'%';
+  document.getElementById('loadMsg').textContent=s;
+}
+
+/* ══ Claude Vision API 직접 호출 ══ */
+async function callClaude(apiKey,b64,mime){
+  // 프록시 경유 (API Key는 서버에서 관리)
+  var resp=await fetch('/api/ai',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({action:'analyze',b64:b64,mime:mime})
+  });
+  if(!resp.ok){
+    var ed=await resp.json().catch(function(){return{};});
+    if(resp.status===401)throw new Error('AUTH_FAIL');
+    if(resp.status===429)throw new Error('QUOTA');
+    throw new Error(ed.error||'HTTP '+resp.status);
+  }
+  var data=await resp.json();
+  if(!data.ok)throw new Error(data.error||'분석 실패');
+  return data.raw||'';
+}
+
+/* ══ 프롬프트 ══ */
+function buildPrompt(){
+  return '이 이미지는 한국 약국의 약 봉투 또는 처방전 사진입니다.\n이미지에서 읽을 수 있는 모든 약 정보를 분석하여 아래 JSON 형식으로만 응답하세요. 다른 텍스트나 마크다운을 절대 포함하지 마세요.\n\n{\n  "drugs":[\n    {\n      "name":"약품 제품명",\n      "genericName":"성분명 (있으면)",\n      "dosage":"1회 복용량 (예: 1정, 5ml)",\n      "frequency":"복용 횟수 (예: 하루 3회)",\n      "timing":"복용 시점 (예: 식후 30분, 취침 전)",\n      "duration":"복용 기간 (예: 3일, 7일)",\n      "purpose":"이 약의 용도/효능 (1~2문장)",\n      "warnings":["주의사항1","주의사항2"],\n      "sideEffects":["부작용1","부작용2"],\n      "storage":"보관 방법",\n      "interactions":"다른 약과의 상호작용 (있으면)",\n      "tips":"복용 팁 또는 참고사항"\n    }\n  ],\n  "prescription":{\n    "patient":"환자명 (있으면, 없으면 null)",\n    "doctor":"의사명 (있으면, 없으면 null)",\n    "hospital":"병원명 (있으면, 없으면 null)",\n    "date":"처방일 (있으면, 없으면 null)"\n  },\n  "summary":"전체 복용 지침 2~3문장 요약",\n  "urgent_warning":"가장 중요한 주의사항 (없으면 null)",\n  "next_refill_date":"다음 약 수령일 예상 (복용 기간 기반, 없으면 null)"\n}\n\n읽을 수 없는 항목은 null 또는 빈 배열로 처리하세요.\n약 봉투나 처방전이 아닌 경우 {"error":"약 봉투 또는 처방전이 아닙니다"}를 반환하세요.';
+}
+
+/* ══ JSON 파싱 ══ */
+function parseAI(raw){
+  if(!raw||!raw.trim())return null;
+  var s=raw.trim();
+  try{return JSON.parse(s);}catch(e){}
+  var m=s.match(/```json\s*([\s\S]+?)\s*```/);if(m){try{return JSON.parse(m[1]);}catch(e){}}
+  m=s.match(/```\s*([\s\S]+?)\s*```/);if(m){try{return JSON.parse(m[1]);}catch(e){}}
+  var a=s.indexOf('{'),b=s.lastIndexOf('}');
+  if(a>=0&&b>a){try{return JSON.parse(s.slice(a,b+1));}catch(e){}}
+  return null;
+}
+
+/* ══ 에러 메시지 ══ */
+var ERRS={
+  'AUTH_FAIL':'🔑 API Key가 올바르지 않아요.\n\n설정 탭에서 API Key를 다시 확인해주세요.',
+  'QUOTA':'⏱️ AI 요청 한도에 도달했어요.\n\n잠시 후 다시 시도해주세요.',
+  'PARSE_FAIL':'📷 이미지에서 약 정보를 읽지 못했어요.\n\n• 약 봉투 전체가 보이는지 확인\n• 글자가 선명하게 나왔는지 확인\n• 조명이 밝은 곳에서 다시 찍어보세요',
+  'Failed to fetch':'📶 네트워크 연결을 확인해주세요.'
+};
+function getErrMsg(msg){
+  for(var k in ERRS){if(msg&&msg.indexOf(k)>=0)return ERRS[k];}
+  return '⚠️ 분석 중 오류가 발생했어요.\n\n잠시 후 다시 시도해주세요.';
+}
+
+/* ══ 결과 렌더링 ══ */
+function renderResult(data, doSave){
+  var sec=document.getElementById('res-section');
+  var tip=document.getElementById('home-tip');
+  sec.style.display='block';
+  if(tip)tip.style.display='none';
+  if(data.error){sec.innerHTML='<div style="margin:0 14px 10px;padding:16px;background:var(--red-lt);border-radius:12px;border:1px solid var(--red-bd);font-size:13px;color:var(--red);font-weight:700">⚠️ '+esc(data.error)+'</div>';return;}
+
+  var html='';
+
+  // 긴급 경고
+  if(data.urgent_warning){
+    html+='<div class="urgent-banner"><span style="font-size:22px;flex-shrink:0">⚠️</span><div><div style="font-size:12px;font-weight:800;margin-bottom:3px">중요 주의사항</div><div style="font-size:13px;line-height:1.5;opacity:.95">'+esc(data.urgent_warning)+'</div></div></div>';
+  }
+
+  // 요약
+  if(data.summary){
+    html+='<div class="summary-card"><div style="font-size:11px;font-weight:800;color:var(--mint);margin-bottom:5px">📋 복용 요약</div><div style="font-size:13px;color:var(--t1);line-height:1.65">'+esc(data.summary)+'</div></div>';
+  }
+
+  // 처방 정보
+  var pr=data.prescription||{};
+  if(pr.patient||pr.hospital||pr.doctor||pr.date){
+    html+='<div class="card"><div class="card-hd">📄 처방 정보</div><div style="padding:10px 13px;display:flex;flex-direction:column;gap:5px">';
+    if(pr.patient)html+='<div style="font-size:13px;color:var(--t1)">👤 환자: <b>'+esc(pr.patient)+'</b></div>';
+    if(pr.hospital)html+='<div style="font-size:13px;color:var(--t1)">🏥 병원: <b>'+esc(pr.hospital)+'</b></div>';
+    if(pr.doctor)html+='<div style="font-size:13px;color:var(--t1)">👨‍⚕️ 의사: <b>'+esc(pr.doctor)+'</b></div>';
+    if(pr.date)html+='<div style="font-size:13px;color:var(--t1)">📅 처방일: <b>'+esc(pr.date)+'</b></div>';
+    html+='</div></div>';
+  }
+
+  // 약품별 카드
+  (data.drugs||[]).forEach(function(drug,i){
+    html+='<div class="drug-card">';
+    html+='<div class="drug-hd"><div><div class="drug-nm">💊 '+esc(drug.name||'약품 '+(i+1))+'</div>';
+    if(drug.genericName)html+='<div style="font-size:10px;opacity:.8;margin-top:2px">성분: '+esc(drug.genericName)+'</div>';
+    if(drug.purpose)html+='<div class="drug-purpose">'+esc(drug.purpose)+'</div>';
+    html+='</div></div>';
+    html+='<div class="drug-body">';
+
+    var rows=[
+      drug.dosage      && ['💊','1회 복용량',drug.dosage],
+      drug.frequency   && ['🔢','복용 횟수',drug.frequency],
+      drug.timing      && ['⏰','복용 시점',drug.timing],
+      drug.duration    && ['📅','복용 기간',drug.duration],
+      drug.storage     && ['🌡️','보관 방법',drug.storage],
+      drug.interactions&& ['🔗','상호작용',drug.interactions],
+      drug.tips        && ['💡','복용 팁',drug.tips],
+    ].filter(Boolean);
+
+    rows.forEach(function(r){
+      html+='<div class="drug-row"><span class="drug-row-ico">'+r[0]+'</span><div class="drug-row-body"><div class="drug-row-lbl">'+r[1]+'</div><div class="drug-row-val">'+esc(r[2])+'</div></div></div>';
+    });
+
+    // 주의사항
+    if(drug.warnings&&drug.warnings.length){
+      html+='<div class="drug-row"><span class="drug-row-ico">⚠️</span><div class="drug-row-body"><div class="drug-row-lbl">주의사항</div><div style="margin-top:3px">'+
+        drug.warnings.map(function(w){return '<span class="warn-badge warn-red">'+esc(w)+'</span>';}).join('')+
+        '</div></div></div>';
+    }
+    // 부작용
+    if(drug.sideEffects&&drug.sideEffects.length){
+      html+='<div class="drug-row"><span class="drug-row-ico">🩺</span><div class="drug-row-body"><div class="drug-row-lbl">부작용</div><div style="margin-top:3px">'+
+        drug.sideEffects.map(function(w){return '<span class="warn-badge warn-yel">'+esc(w)+'</span>';}).join('')+
+        '</div></div></div>';
+    }
+
+    html+='</div>';
+
+    // 약장 추가 버튼
+    if(drug.name){
+      var dur=parseDurationDays(drug.duration);
+      html+='<div style="padding:8px 13px 12px"><button onclick="addToPillFromResult('+JSON.stringify(JSON.stringify(drug))+')" style="width:100%;height:36px;background:var(--mint-lt);color:var(--mint);border:1.5px solid var(--mint-bd);border-radius:9px;font-size:12px;font-weight:800;cursor:pointer;font-family:inherit">💊 약장에 추가</button></div>';
+    }
+    html+='</div>';
+  });
+
+  // 다음 수령일
+  if(data.next_refill_date){
+    html+='<div style="margin:0 14px 10px;padding:10px 13px;background:var(--blu-lt);border:1px solid var(--blu-bd);border-radius:10px;font-size:12px;color:var(--blu);font-weight:700">📅 다음 약 수령 예상일: '+esc(data.next_refill_date)+'</div>';
+  }
+
+  // 다시 찍기
+  html+='<div style="margin:0 14px 14px"><button onclick="resetScan()" style="width:100%;height:40px;background:var(--bg);color:var(--t2);border:1.5px solid var(--bd);border-radius:10px;font-size:13px;font-weight:700;cursor:pointer;font-family:inherit">🔄 다시 찍기</button></div>';
+
+  sec.innerHTML=html;
+
+  // 이력 저장
+  if(doSave){
+    var item={
+      id:'h'+Date.now(),
+      date:new Date().toLocaleString('ko-KR',{month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'}),
+      drugs:(data.drugs||[]).map(function(d){return d.name;}).filter(Boolean),
+      summary:data.summary||'',
+      data:data
+    };
+    DB.history.unshift(item);
+    if(DB.history.length>100)DB.history=DB.history.slice(0,100);
+    saveDB();
+    updateHistBadge();
+  }
+}
+
+function hideResult(){
+  var s=document.getElementById('res-section');if(s)s.style.display='none';
+  var t=document.getElementById('home-tip');if(t)t.style.display='block';
+}
+
+function resetScan(){
+  _b64=null;_state='idle';_result=null;
+  document.getElementById('upa').classList.remove('has');
+  document.getElementById('upimg').style.display='none';
+  document.getElementById('upico').style.display='block';
+  document.getElementById('uptit').textContent='약 봉투 / 처방전 선택';
+  document.getElementById('upsub').textContent='탭 또는 드래그 · JPG · PNG · HEIC';
+  document.getElementById('fi').value='';
+  document.getElementById('errbox').style.display='none';
+  setBtn('idle');
+  hideResult();
+}
+
+/* ══ 약장에서 직접 추가 ══ */
+function addToPillFromResult(drugJson){
+  var drug;
+  try{drug=JSON.parse(drugJson);}catch(e){return;}
+  var dur=parseDurationDays(drug.duration);
+  var today=new Date().toISOString().slice(0,10);
+  var end=new Date();end.setDate(end.getDate()+(dur||7));
+  DB.pills.push({
+    id:'p'+Date.now(),
+    name:drug.name||'약품',
+    dosage:drug.dosage?drug.frequency+' '+drug.dosage:drug.frequency||'',
+    startDate:today,
+    endDate:end.toISOString().slice(0,10),
+    days:dur||7,
+    addedAt:new Date().toISOString()
+  });
+  saveDB();updatePillBadge();
+  toast('💊 약장에 추가됐어요!');
+}
+
+/* ══ 기간 파싱 (일수 변환) ══ */
+function parseDurationDays(str){
+  if(!str)return null;
+  var m;
+  m=str.match(/(\d+)\s*일/);if(m)return parseInt(m[1]);
+  m=str.match(/(\d+)\s*주/);if(m)return parseInt(m[1])*7;
+  m=str.match(/(\d+)\s*개월/);if(m)return parseInt(m[1])*30;
+  return null;
+}
+
+/* ══ 이력 ══ */
+function renderHistList(){
+  var el=document.getElementById('hist-list');
+  var q=(document.getElementById('hist-search')||{}).value||'';
+  var cl=document.getElementById('hist-clear');if(cl)cl.style.display=q?'block':'none';
+  var list=DB.history.filter(function(h){
+    if(!q)return true;
+    var ql=q.toLowerCase();
+    return (h.drugs||[]).some(function(d){return d.toLowerCase().includes(ql);})
+      ||(h.summary||'').toLowerCase().includes(ql);
+  });
+  document.getElementById('hist-cnt').textContent=list.length?list.length+'건':'';
+  document.getElementById('hist-lbl').textContent=DB.history.length>0?'이력 '+DB.history.length:'이력';
+  if(!list.length){
+    el.innerHTML='<div style="padding:50px 20px;text-align:center;color:var(--t3)"><div style="font-size:44px;margin-bottom:12px">📋</div><div style="font-size:15px;font-weight:700">'+(q?'검색 결과가 없어요':'아직 분석한 약이 없어요')+'</div><div style="font-size:12px;margin-top:6px">홈에서 약 봉투를 찍어보세요</div></div>';
+    return;
+  }
+  el.innerHTML=list.map(function(h,i){
+    return '<div class="hist-card" onclick="openHistDetail('+i+',\''+esc(q)+'\')">'
+      +'<div class="hist-date">'+h.date+'</div>'
+      +'<div class="hist-drugs">'+(h.drugs.length?h.drugs.join(', '):'약품명 미확인')+'</div>'
+      +'<div class="hist-preview">'+esc(h.summary||'분석 결과')+'</div>'
+      +'<button onclick="event.stopPropagation();deleteHist('+i+')" style="position:absolute;top:10px;right:12px;width:22px;height:22px;max-width:22px;max-height:22px;border-radius:50%;border:1px solid #ddd;background:#f5f5f5;color:#bbb;font-size:9px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1">✕</button>'
+      +'</div>';
+  }).join('')+'<div style="height:16px"></div>';
+}
+function clearHistSearch(){
+  var si=document.getElementById('hist-search');if(si)si.value='';
+  renderHistList();
+}
+function openHistDetail(idx,q){
+  var list=DB.history;
+  if(q){
+    var ql=q.toLowerCase();
+    list=list.filter(function(h){
+      return (h.drugs||[]).some(function(d){return d.toLowerCase().includes(ql);})
+        ||(h.summary||'').toLowerCase().includes(ql);
+    });
+  }
+  var h=list[idx];if(!h)return;
+  document.getElementById('hist-detail-title').textContent=h.date;
+  var body=document.getElementById('hist-detail-body');
+  // 결과 카드를 모달에 렌더
+  var fakeEl={innerHTML:''};
+  var oldSec=document.getElementById('res-section');
+  var prevHTML=oldSec.innerHTML;
+  renderResult(h.data,false);
+  body.innerHTML=document.getElementById('res-section').innerHTML;
+  // 다시찍기 버튼 제거
+  var rb=body.querySelector('button[onclick="resetScan()"]');
+  if(rb)rb.parentNode.style.display='none';
+  oldSec.innerHTML=prevHTML;
+  document.getElementById('hist-detail-modal').classList.add('on');
+}
+function closeHistDetail(){document.getElementById('hist-detail-modal').classList.remove('on');}
+function deleteHist(idx){
+  showConfirm('🗑️ 이력 삭제','이 분석 기록을 삭제할까요?','삭제',function(){
+    DB.history.splice(idx,1);saveDB();renderHistList();updateHistBadge();toast('삭제됐어요');
+  });
+}
+function clearHistory(){DB.history=[];saveDB();renderHistList();updateHistBadge();toast('🗑️ 이력이 삭제됐어요');}
+function updateHistBadge(){
+  var cnt=DB.history.length;
+  var b=document.getElementById('hist-badge');
+  var l=document.getElementById('hist-lbl');
+  if(cnt>0){if(b){b.textContent=cnt;b.classList.add('show');}if(l)l.textContent='이력 '+cnt;}
+  else{if(b)b.classList.remove('show');if(l)l.textContent='이력';}
+}
+
+/* ══ 약장 ══ */
+function renderPills(){
+  var items=(DB.pills||[]).slice().sort(function(a,b){return new Date(a.endDate)-new Date(b.endDate);});
+  var el=document.getElementById('pill-list');
+  var ub=document.getElementById('pill-urgent-banner');
+  if(!items.length){
+    el.innerHTML='<div style="margin:0 14px 10px;padding:24px;text-align:center;color:var(--t3);background:var(--wh);border-radius:12px;border:1px solid var(--bd)"><div style="font-size:36px;margin-bottom:10px">💊</div><div style="font-size:14px;font-weight:700">약장이 비어있어요</div><div style="font-size:12px;margin-top:5px">약 분석 후 \'약장에 추가\' 버튼을 눌러보세요</div></div>';
+    if(ub)ub.style.display='none';
+    return;
+  }
+  var today=new Date();today.setHours(0,0,0,0);
+  var urgent=[];
+  var html='<div class="pill-card">';
+  items.forEach(function(item){
+    var end=new Date(item.endDate);end.setHours(0,0,0,0);
+    var remaining=Math.round((end-today)/(1000*60*60*24));
+    var ratio=Math.max(0,remaining/(item.days||7));
+    var color=remaining<=0?'var(--red)':remaining<=2?'#e07020':remaining<=5?'#c0a000':'var(--mint)';
+    var barW=Math.min(100,Math.max(0,Math.round(ratio*100)));
+    var badge='';
+    if(remaining<0){badge='<span class="badge-urgent">완료</span>';}
+    else if(remaining===0){badge='<span class="badge-urgent">오늘 마지막</span>';urgent.push(item.name);}
+    else if(remaining<=2){badge='<span class="badge-urgent">'+remaining+'일 남음</span>';urgent.push(item.name+'('+remaining+'일)');}
+    html+='<div class="pill-item">'
+      +'<div class="pill-ico">💊</div>'
+      +'<div style="flex:1;min-width:0">'
+        +'<div class="pill-nm">'+esc(item.name)+badge+'</div>'
+        +'<div class="pill-sub">'+(item.dosage?esc(item.dosage)+'<br>':'')+'📅 '+item.startDate+' ~ '+item.endDate+'</div>'
+        +'<div class="pill-bar"><div class="pill-bar-fill" style="width:'+barW+'%;background:'+color+'"></div></div>'
+      +'</div>'
+      +'<div>'
+        +'<div class="pill-days" style="color:'+color+'">'+(remaining<0?'완료':remaining===0?'오늘!':remaining+'일')+'</div>'
+        +'<button onclick="deletePill(\''+item.id+'\')" style="position:absolute;top:7px;right:7px;width:20px;height:20px;max-width:20px;max-height:20px;border-radius:50%;border:1px solid #ddd;background:#f5f5f5;color:#bbb;font-size:8px;cursor:pointer;display:flex;align-items:center;justify-content:center;padding:0;line-height:1">✕</button>'
+      +'</div>'
+      +'</div>';
+  });
+  html+='</div>';
+  el.innerHTML=html;
+  if(urgent.length&&ub){
+    ub.style.display='block';
+    ub.innerHTML='<div style="margin:0 14px 8px;background:var(--red-lt);border:1.5px solid var(--red-bd);border-radius:10px;padding:9px 13px;font-size:12px;color:var(--red);font-weight:800">🔔 '+urgent.join(', ')+' — 복용 마감 임박!</div>';
+  } else if(ub){ub.style.display='none';}
+  updatePillBadge();
+}
+function openPillAddModal(){
+  document.getElementById('pill-name').value='';
+  document.getElementById('pill-dosage').value='';
+  document.getElementById('pill-start').value=new Date().toISOString().slice(0,10);
+  document.getElementById('pill-days').value='';
+  document.getElementById('pill-add-modal').classList.add('on');
+  setTimeout(function(){document.getElementById('pill-name').focus();},100);
+}
+function closePillModal(){document.getElementById('pill-add-modal').classList.remove('on');}
+function addPillItem(){
+  var name=document.getElementById('pill-name').value.trim();
+  if(!name){toast('약품명을 입력해주세요');return;}
+  var dosage=document.getElementById('pill-dosage').value.trim();
+  var start=document.getElementById('pill-start').value||new Date().toISOString().slice(0,10);
+  var days=parseInt(document.getElementById('pill-days').value)||7;
+  var end=new Date(start);end.setDate(end.getDate()+days);
+  DB.pills.push({id:'p'+Date.now(),name:name,dosage:dosage,startDate:start,endDate:end.toISOString().slice(0,10),days:days,addedAt:new Date().toISOString()});
+  saveDB();closePillModal();renderPills();toast('💊 약장에 추가됐어요!');
+}
+function deletePill(id){
+  showConfirm('💊 삭제','이 약을 약장에서 삭제할까요?','삭제',function(){
+    DB.pills=DB.pills.filter(function(p){return p.id!==id;});
+    saveDB();renderPills();toast('삭제됐어요');
+  });
+}
+function clearPills(){DB.pills=[];saveDB();renderPills();toast('💊 약장이 초기화됐어요');}
+function updatePillBadge(){
+  var cnt=DB.pills.length;
+  var b=document.getElementById('pill-badge');
+  var l=document.getElementById('pill-lbl');
+  if(cnt>0){if(b){b.textContent=cnt;b.classList.add('show');}if(l)l.textContent='약장 '+cnt;}
+  else{if(b)b.classList.remove('show');if(l)l.textContent='약장';}
+}
+
+/* ══ API 키 (서버 관리 — 클라이언트 불필요) ══ */
+function loadApiKey(){ return null; }
+function saveApiKey(){}
+function onKeyInput(){}
+function updateKeyStatus(){}
+
+/* ══ 확인 모달 ══ */
+function showConfirm(msg,sub,okLabel,cb){
+  document.getElementById('confirm-msg').textContent=msg;
+  document.getElementById('confirm-sub').textContent=sub||'';
+  document.getElementById('confirm-ok-btn').textContent=okLabel||'확인';
+  _confirmCb=cb||null;
+  document.getElementById('confirm-modal').classList.add('on');
+}
+function doConfirm(){
+  document.getElementById('confirm-modal').classList.remove('on');
+  if(_confirmCb){var cb=_confirmCb;_confirmCb=null;cb();}
+}
+function doCancelConfirm(){document.getElementById('confirm-modal').classList.remove('on');_confirmCb=null;}
+
+/* ══ 토스트 ══ */
+function toast(m){
+  var t=document.getElementById('toast');
+  t.textContent=m;t.classList.add('on');
+  clearTimeout(_toastTimer);
+  _toastTimer=setTimeout(function(){t.classList.remove('on');},2600);
+}
+
+/* ══ XSS 방지 ══ */
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+
+/* ══ 설정 모달 ══ */
+function openSettingModal(){
+  updateKeyStatus();applyDark(_darkMode);applyFont(_largeFont);
+  document.getElementById('setting-modal').classList.add('on');
+}
+function closeSettingModal(){document.getElementById('setting-modal').classList.remove('on');}
+
+/* ══ 복용관리 탭 서브탭 전환 ══ */
+function switchDoseTab(sub){
+  var isAlarm=(sub==='alarm');
+  document.getElementById('dose-alarm-view').style.display=isAlarm?'block':'none';
+  document.getElementById('dose-log-view').style.display=isAlarm?'none':'block';
+  var ta=document.getElementById('doseTabAlarm'),tl=document.getElementById('doseTabLog');
+  if(ta){ta.classList.toggle('on',isAlarm);} if(tl){tl.classList.toggle('on',!isAlarm);}
+  if(isAlarm)renderAlarmView(); else renderDoseLog();
+}
+function renderDoseTab(){switchDoseTab('alarm');}
+
+/* ══ 복용알림 ══ */
+// DB.alarms = [{id, pillName, times:['08:00','12:00'], enabled:true}]
+// DB.doseLog = [{id, pillName, time, date, done:bool}]
+
+function openAlarmModal(){
+  // 약장 약 목록으로 select 채우기
+  var sel=document.getElementById('alarm-pill-select');
+  sel.innerHTML='<option value="">— 약장에서 선택 —</option>';
+  (DB.pills||[]).forEach(function(p){
+    var opt=document.createElement('option');opt.value=p.name;opt.textContent=p.name;sel.appendChild(opt);
+  });
+  if(!(DB.pills||[]).length){
+    var opt=document.createElement('option');opt.value='';opt.textContent='약장에 약을 먼저 추가하세요';sel.appendChild(opt);
+  }
+  // 칩 초기화
+  document.querySelectorAll('.alarm-chip').forEach(function(c){c.classList.remove('on');});
+  var ct=document.getElementById('alarm-custom-time');if(ct)ct.value='';
+  document.getElementById('alarm-add-modal').classList.add('on');
+}
+function closeAlarmModal(){document.getElementById('alarm-add-modal').classList.remove('on');}
+function toggleAlarmChip(el,time){el.classList.toggle('on');}
+
+function addAlarm(){
+  var pillName=(document.getElementById('alarm-pill-select').value||'').trim();
+  if(!pillName){toast('약품을 선택해주세요');return;}
+  var times=[];
+  document.querySelectorAll('.alarm-chip.on').forEach(function(c){
+    var t=c.getAttribute('onclick').match(/'([0-9:]+)'/);if(t)times.push(t[1]);
+  });
+  var custom=(document.getElementById('alarm-custom-time').value||'').trim();
+  if(custom&&!times.includes(custom))times.push(custom);
+  if(!times.length){toast('복용 시간을 선택해주세요');return;}
+  if(!DB.alarms)DB.alarms=[];
+  // 같은 약 기존 알림 제거 후 재등록
+  DB.alarms=DB.alarms.filter(function(a){return a.pillName!==pillName;});
+  DB.alarms.push({id:'a'+Date.now(),pillName:pillName,times:times,enabled:true});
+  saveDB();closeAlarmModal();
+  // 오늘 기록 생성
+  var today=new Date().toISOString().slice(0,10);
+  times.forEach(function(t){
+    if(!DB.doseLog)DB.doseLog=[];
+    var exists=DB.doseLog.find(function(l){return l.pillName===pillName&&l.time===t&&l.date===today;});
+    if(!exists)DB.doseLog.push({id:'l'+Date.now()+'_'+Math.random().toString(36).slice(2),pillName:pillName,time:t,date:today,done:false});
+  });
+  saveDB();renderAlarmView();
+  toast('🔔 '+pillName+' 알림 추가됐어요! ('+times.join(', ')+')');
+  // Notification API 요청
+  if('Notification' in window && Notification.permission==='default'){
+    Notification.requestPermission();
+  }
+}
+
+function renderAlarmView(){
+  renderAlarmList();
+  renderAlarmPillSummary();
+  updateDoseBadge();
+}
+
+function renderAlarmList(){
+  var el=document.getElementById('alarm-list');if(!el)return;
+  var today=new Date().toISOString().slice(0,10);
+  var todayLogs=(DB.doseLog||[]).filter(function(l){return l.date===today;});
+  todayLogs.sort(function(a,b){return a.time.localeCompare(b.time);});
+
+  var urgentEl=document.getElementById('alarm-urgent-wrap');
+  var now=new Date();
+  var nowMin=now.getHours()*60+now.getMinutes();
+
+  if(!todayLogs.length){
+    el.innerHTML='<div style="margin:0 14px 10px;padding:20px;text-align:center;background:var(--wh);border-radius:12px;border:1px solid var(--bd);color:var(--t3)"><div style="font-size:32px;margin-bottom:8px">🔔</div><div style="font-size:13px;font-weight:700">오늘 복용 일정이 없어요</div><div style="font-size:11px;margin-top:4px">+ 알림 추가를 눌러 설정해보세요</div></div>';
+    if(urgentEl)urgentEl.style.display='none';
+    return;
+  }
+  var missed=[];
+  var html='<div class="card">';
+  todayLogs.forEach(function(log){
+    var parts=log.time.split(':');var lMin=parseInt(parts[0])*60+parseInt(parts[1]);
+    var isPast=lMin<nowMin;
+    var isNear=!log.done&&Math.abs(lMin-nowMin)<=30;
+    var status=log.done?'done':isPast?'missed':'upcoming';
+    var colors={done:['var(--grn)','var(--grn-lt)','✅'],missed:['var(--red)','var(--red-lt)','⏰'],upcoming:['var(--mint)','var(--mint-lt)','🔔']};
+    var c=colors[status];
+    if(status==='missed')missed.push(log.pillName+' '+log.time);
+    html+='<div style="display:flex;align-items:center;gap:10px;padding:11px 13px;border-bottom:1px solid var(--bg)">'
+      +'<div style="width:36px;height:36px;border-radius:50%;background:'+c[1]+';display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0">'+c[2]+'</div>'
+      +'<div style="flex:1">'
+        +'<div style="font-size:13px;font-weight:800;color:var(--navy)">'+esc(log.pillName)+'</div>'
+        +'<div style="font-size:11px;color:var(--t3);margin-top:1px">'+log.time+(status==='done'?' · 복용완료':status==='missed'?' · 복용 안 함':isNear?' · 지금 복용할 시간이에요!':' · 예정')+'</div>'
+      +'</div>'
+      +(status!=='done'?'<button onclick="markDone(''+log.id+'')" style="height:32px;padding:0 12px;background:var(--mint);color:#fff;border:none;border-radius:8px;font-size:11px;font-weight:800;cursor:pointer;font-family:inherit;flex-shrink:0">복용 ✓</button>':'<div style="font-size:20px">✅</div>')
+      +'</div>';
+  });
+  html+='</div>';
+  el.innerHTML=html;
+
+  if(missed.length&&urgentEl){
+    urgentEl.style.display='block';
+    urgentEl.innerHTML='<div style="margin:0 14px 8px;background:var(--yel-lt);border:1.5px solid var(--yel-bd);border-radius:10px;padding:9px 13px;font-size:12px;color:var(--yel);font-weight:800">⏰ 미복용: '+missed.join(', ')+'</div>';
+  } else if(urgentEl){urgentEl.style.display='none';}
+}
+
+function markDone(logId){
+  var log=(DB.doseLog||[]).find(function(l){return l.id===logId;});
+  if(log){log.done=true;saveDB();renderAlarmView();toast('✅ 복용 완료!');}
+}
+
+function renderAlarmPillSummary(){
+  var el=document.getElementById('alarm-pill-summary');if(!el)return;
+  var alarms=DB.alarms||[];
+  if(!alarms.length){el.innerHTML='<div style="margin:0 14px 10px;padding:14px;text-align:center;color:var(--t3);font-size:12px;background:var(--wh);border-radius:10px;border:1px solid var(--bd)">설정된 알림이 없어요</div>';return;}
+  el.innerHTML='<div class="card">'+alarms.map(function(a){
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 13px;border-bottom:1px solid var(--bg)">'
+      +'<div style="font-size:22px">💊</div>'
+      +'<div style="flex:1">'
+        +'<div style="font-size:13px;font-weight:800;color:var(--navy)">'+esc(a.pillName)+'</div>'
+        +'<div style="font-size:11px;color:var(--t3);margin-top:2px">'+a.times.join(' · ')+'</div>'
+      +'</div>'
+      +'<button onclick="deleteAlarm(''+a.id+'')" style="width:20px;height:20px;border-radius:50%;border:1px solid #ddd;background:#f5f5f5;color:#bbb;font-size:9px;cursor:pointer;padding:0;line-height:1;flex-shrink:0">✕</button>'
+      +'</div>';
+  }).join('')+'</div>';
+}
+
+function deleteAlarm(id){
+  showConfirm('🔔 알림 삭제','이 알림을 삭제할까요?','삭제',function(){
+    DB.alarms=(DB.alarms||[]).filter(function(a){return a.id!==id;});
+    saveDB();renderAlarmView();toast('삭제됐어요');
+  });
+}
+
+/* ══ 복용기록 ══ */
+function renderDoseLog(){
+  renderDoseRateCard();
+  renderDoseLogList();
+}
+
+function renderDoseRateCard(){
+  var el=document.getElementById('dose-rate-card');if(!el)return;
+  var today=new Date();
+  var days=['일','월','화','수','목','금','토'];
+  var html='';
+  var weekTotal=0,weekDone=0;
+  for(var i=6;i>=0;i--){
+    var d=new Date(today);d.setDate(d.getDate()-i);
+    var dateStr=d.toISOString().slice(0,10);
+    var dayLogs=(DB.doseLog||[]).filter(function(l){return l.date===dateStr;});
+    var total=dayLogs.length,done=dayLogs.filter(function(l){return l.done;}).length;
+    weekTotal+=total;weekDone+=done;
+    var pct=total>0?Math.round(done/total*100):0;
+    var barColor=pct>=80?'var(--mint)':pct>=50?'var(--yel)':'var(--red)';
+    html+='<div class="dose-day-bar">'
+      +'<div class="dose-day-lbl">'+days[d.getDay()]+'</div>'
+      +'<div class="dose-bar-track"><div class="dose-bar-fill" style="width:'+pct+'%;background:'+barColor+';">'+(pct>20?pct+'%':'')+'</div></div>'
+      +'<div class="dose-pct">'+(total>0?done+'/'+total:'-')+'</div>'
+      +'</div>';
+  }
+  var weekPct=weekTotal>0?Math.round(weekDone/weekTotal*100):0;
+  var msg=weekPct>=90?'🎉 이번 주 완벽해요!':weekPct>=70?'👍 잘 하고 있어요':weekPct>=50?'💪 조금 더 챙겨요':'⚠️ 복용을 잊지 마세요';
+  el.innerHTML='<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">'
+    +'<div style="font-size:22px;font-weight:900;color:var(--mint)">'+weekPct+'%</div>'
+    +'<div style="font-size:12px;color:var(--t2);font-weight:700">'+msg+'</div>'
+    +'</div>'+html;
+}
+
+function renderDoseLogList(){
+  var el=document.getElementById('dose-log-list');if(!el)return;
+  var logs=(DB.doseLog||[]).slice().reverse();
+  if(!logs.length){
+    el.innerHTML='<div style="margin:0 14px 10px;padding:24px;text-align:center;color:var(--t3);background:var(--wh);border-radius:12px;border:1px solid var(--bd)"><div style="font-size:32px;margin-bottom:8px">📋</div><div style="font-size:13px;font-weight:700">복용 기록이 없어요</div></div>';
+    return;
+  }
+  // 날짜별 그룹
+  var groups={};
+  logs.forEach(function(l){
+    if(!groups[l.date])groups[l.date]=[];
+    groups[l.date].push(l);
+  });
+  var html='';
+  Object.keys(groups).sort().reverse().forEach(function(date){
+    var g=groups[date];
+    var done=g.filter(function(l){return l.done;}).length;
+    html+='<div class="card" style="margin-bottom:8px">'
+      +'<div class="card-hd">'+date+'<span style="font-size:11px;color:var(--mint);font-weight:800">'+done+'/'+g.length+' 복용</span></div>';
+    g.sort(function(a,b){return a.time.localeCompare(b.time);}).forEach(function(l){
+      html+='<div style="display:flex;align-items:center;gap:8px;padding:8px 13px;border-bottom:1px solid var(--bg)">'
+        +'<span style="font-size:16px">'+(l.done?'✅':'❌')+'</span>'
+        +'<div style="flex:1"><div style="font-size:12px;font-weight:800;color:var(--navy)">'+esc(l.pillName)+'</div></div>'
+        +'<div style="font-size:11px;color:var(--t3);font-weight:700">'+l.time+'</div>'
+        +'</div>';
+    });
+    html+='</div>';
+  });
+  el.innerHTML=html+'<div style="height:16px"></div>';
+}
+
+function clearDoseLog(){
+  showConfirm('📊 기록 초기화','복용 기록이 모두 삭제됩니다.
+정말 초기화할까요?','초기화',function(){
+    DB.doseLog=[];saveDB();renderDoseLog();toast('📊 기록 초기화됐어요');
+  });
+}
+
+function updateDoseBadge(){
+  // 오늘 미복용 개수 뱃지
+  var today=new Date().toISOString().slice(0,10);
+  var missed=(DB.doseLog||[]).filter(function(l){
+    return l.date===today&&!l.done;
+  }).length;
+  var b=document.getElementById('dose-badge');
+  if(missed>0){if(b){b.textContent=missed;b.classList.add('show');}}
+  else{if(b)b.classList.remove('show');}
+}
+
+/* ══ 초기화 ══ */
+function renderAll(){
+  updateHistBadge();
+  updatePillBadge();
+  updateDoseBadge();
+  updateKeyStatus();
+  applyDark(_darkMode);
+  applyFont(_largeFont);
+}
+
+// 6중 렌더링 보험 (마트찍go 동일)
+renderAll();
+if(document.readyState!=='complete'){window.addEventListener('load',function(){renderAll();});}
+document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible')renderAll();});
+window.addEventListener('pageshow',function(){renderAll();});
+window.addEventListener('focus',function(){updateHistBadge();updatePillBadge();});
+setTimeout(function(){renderAll();},300);
+setTimeout(function(){renderAll();},1000);
+
+// go()에 이미 stopCamera 포함됨
+</script>
+</body>
+</html>
