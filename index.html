@@ -220,7 +220,11 @@ body.large-font input{font-size:16px!important;height:48px!important}
 <div class="v on" id="v-home">
   <div class="hd">
     <div class="hdr">
-      <div><div class="logo">💊 약국찍<em>go</em></div><div class="sub">나의 복약 도우미</div></div>
+      <div>
+        <img src="/logo.png" alt="약국찍go" style="height:32px;display:block" onerror="this.style.display='none';document.getElementById('logo-fallback').style.display='block'">
+        <div class="logo" id="logo-fallback" style="display:none">💊 약국찍<em>go</em></div>
+        <div class="sub" style="margin-top:4px">약봉투 찍고, 편리함 go!</div>
+      </div>
       <div style="display:flex;gap:6px">
         <button class="ic" onclick="openSettingModal()" title="설정">⚙️</button>
       </div>
