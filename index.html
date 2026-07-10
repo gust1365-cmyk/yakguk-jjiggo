@@ -220,15 +220,10 @@ body.large-font input{font-size:16px!important;height:48px!important}
 <div class="v on" id="v-home">
   <div class="hd">
     <div class="hdr">
-      <div><div class="logo">💊 약국찍<em>go</em></div><div class="sub">약 봉투 · 처방전을 찍으면 AI가 정리해드려요</div></div>
+      <div><div class="logo">💊 약국찍<em>go</em></div><div class="sub">나의 복약 도우미</div></div>
       <div style="display:flex;gap:6px">
         <button class="ic" onclick="openSettingModal()" title="설정">⚙️</button>
       </div>
-    </div>
-    <!-- 카메라/파일 탭 전환 -->
-    <div style="display:flex;gap:6px;margin-top:10px">
-      <button class="tab-btn" id="camTabBtn" onclick="switchToCamera()">📷 카메라 촬영</button>
-      <button class="tab-btn on" id="fileTabBtn" onclick="switchToFile()">🖼️ 갤러리 선택</button>
     </div>
   </div>
   <div class="scr" id="home-scr">
@@ -248,8 +243,56 @@ body.large-font input{font-size:16px!important;height:48px!important}
           <div style="font-size:20px;font-weight:900;color:var(--mint);margin-top:3px" id="dash-dose">-</div>
         </div>
       </div>
+      <!-- 찍기 CTA -->
+      <div onclick="goShot()" style="margin-top:10px;background:var(--wh);border:1.5px solid var(--mint-bd);border-radius:16px;padding:15px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;box-shadow:0 2px 8px rgba(0,176,155,.1)">
+        <div style="width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,var(--mint),#00806e);display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0">📸</div>
+        <div style="flex:1">
+          <div style="font-size:15px;font-weight:900;color:var(--navy)">약 봉투 분석하기</div>
+          <div style="font-size:11px;color:var(--t3);margin-top:1px">봉투·처방전을 찍으면 AI가 정리해드려요</div>
+        </div>
+        <div style="color:var(--mint);font-size:18px;font-weight:900">›</div>
+      </div>
+      <!-- 분석 현황 -->
+      <div class="dash-cards">
+        <div class="dash-card" onclick="go('hist')">
+          <div style="font-size:11px;color:var(--t3);font-weight:700">🤖 총 분석</div>
+          <div style="font-size:20px;font-weight:900;color:var(--navy);margin-top:3px"><span id="dash-total">0</span><span style="font-size:12px;color:var(--t3);font-weight:700"> 회</span></div>
+        </div>
+        <div class="dash-card" onclick="go('hist')">
+          <div style="font-size:11px;color:var(--t3);font-weight:700">📅 이번 달 분석</div>
+          <div style="font-size:20px;font-weight:900;color:var(--navy);margin-top:3px"><span id="dash-month">0</span><span style="font-size:12px;color:var(--t3);font-weight:700"> 회</span></div>
+        </div>
+      </div>
+      <!-- 분석한 약국/병원 -->
+      <div id="dash-places" style="display:none;margin-top:10px;background:var(--wh);border:1px solid var(--bd);border-radius:14px;padding:12px 13px">
+        <div style="font-size:11px;color:var(--t3);font-weight:700;margin-bottom:7px">🏥 분석한 약국·병원</div>
+        <div id="dash-places-list" style="display:flex;flex-wrap:wrap;gap:6px"></div>
+      </div>
     </div>
-    <div class="sec" style="padding:14px 14px 8px">📸 약 봉투 분석</div>
+    <!-- 최근 분석 미리보기 -->
+    <div id="home-recent" style="padding:0 14px 4px;display:none">
+      <div class="sec" style="padding:12px 0 8px">📋 최근 분석 <span onclick="go('hist')" style="font-size:12px;color:var(--mint);font-weight:700;cursor:pointer">전체 보기 ›</span></div>
+      <div id="home-recent-list" style="display:flex;flex-direction:column;gap:7px"></div>
+    </div>
+
+    <div style="height:8px"></div>
+  </div>
+</div>
+
+<!-- ══ 찍기 탭 ══ -->
+<div class="v" id="v-shot">
+  <div class="hd">
+    <div class="hdr">
+      <div><div class="logo" style="font-size:22px">📸 찍기</div><div class="sub">약 봉투 · 처방전을 찍으면 AI가 정리해드려요</div></div>
+    </div>
+    <!-- 카메라/파일 탭 전환 -->
+    <div style="display:flex;gap:6px;margin-top:10px">
+      <button class="tab-btn" id="camTabBtn" onclick="switchToCamera()">📷 카메라 촬영</button>
+      <button class="tab-btn on" id="fileTabBtn" onclick="switchToFile()">🖼️ 갤러리 선택</button>
+    </div>
+  </div>
+  <div class="scr" id="shot-scr">
+    <div style="height:10px"></div>
     <!-- 카메라 UI: video는 switchToCamera() 시 동적 생성, 카메라 끄면 제거 -->
     <div id="camSection" style="display:none;padding-top:0">
       <div class="cam-wrap" id="camWrap"></div>
@@ -290,12 +333,6 @@ body.large-font input{font-size:16px!important;height:48px!important}
     <!-- 분석 결과 -->
     <div id="res-section" style="display:none">
       <!-- 결과가 동적으로 렌더됨 -->
-    </div>
-
-    <!-- 최근 분석 미리보기 -->
-    <div id="home-recent" style="padding:0 14px 4px;display:none">
-      <div class="sec" style="padding:12px 0 8px">📋 최근 분석 <span onclick="go('hist')" style="font-size:12px;color:var(--mint);font-weight:700;cursor:pointer">전체 보기 ›</span></div>
-      <div id="home-recent-list" style="display:flex;flex-direction:column;gap:7px"></div>
     </div>
 
     <!-- 홈 팁 -->
@@ -401,7 +438,7 @@ body.large-font input{font-size:16px!important;height:48px!important}
 <div class="tbr">
   <button class="tab on" id="t-home" onclick="go('home')"><div class="ti">🏠</div><div class="tl">홈</div></button>
   <button class="tab" id="t-hist" onclick="go('hist')"><div class="ti">📋</div><div class="tl" id="hist-lbl">이력</div><span class="tbadge" id="hist-badge"></span></button>
-  <button class="cam-tab" onclick="goHome()"><div class="camc">📷</div><div class="tl">찍기</div></button>
+  <button class="cam-tab" id="t-shot" onclick="goShot()"><div class="camc">📷</div><div class="tl">찍기</div></button>
   <button class="tab" id="t-pill" onclick="go('pill')"><div class="ti">💊</div><div class="tl" id="pill-lbl">약장</div><span class="tbadge" id="pill-badge"></span></button>
   <button class="tab" id="t-dose" onclick="go('dose')"><div class="ti">📅</div><div class="tl" id="dose-lbl">복용관리</div><span class="tbadge" id="dose-badge"></span></button>
 </div>
@@ -569,12 +606,12 @@ function go(tab){
   if(tab==='pill')renderPills();
   if(tab==='dose')renderDoseTab();
   if(tab==='home')renderHomeDash();
-  if(tab!=='home')stopCamera();
+  if(tab!=='shot')stopCamera();
 }
-/* 탭바 찍기 버튼: 홈으로 이동하되 갤러리 모드 유지 (카메라 자동 켜지 않음) */
-function goHome(){
+/* 탭바 찍기 버튼: 찍기 뷰로 이동, 갤러리 모드 유지 (카메라 자동 켜지 않음) */
+function goShot(){
   stopCamera();
-  go('home');
+  go('shot');
   // 갤러리 모드로 강제 전환 (카메라가 켜진 상태였다면 파일 모드로)
   document.getElementById('camSection').style.display='none';
   document.getElementById('fileSection').style.display='block';
@@ -1367,6 +1404,30 @@ function renderHomeDash(){
   var done=logs.filter(function(l){return l.done;}).length;
   var dd=document.getElementById('dash-dose');
   if(dd)dd.textContent=logs.length>0?done+'/'+logs.length:'-';
+  // 분석 통계
+  var hist=DB.history||[];
+  var te=document.getElementById('dash-total');
+  if(te)te.textContent=hist.length;
+  var curM=(now.getMonth()+1)+'월';
+  var mCount=hist.filter(function(h){return (h.date||'').indexOf(curM)===0;}).length;
+  var me=document.getElementById('dash-month');
+  if(me)me.textContent=mCount;
+  // 분석한 약국/병원 칩
+  var pw=document.getElementById('dash-places'),pl=document.getElementById('dash-places-list');
+  if(pw&&pl){
+    var seen={},places=[];
+    hist.forEach(function(h){
+      var hp=h.data&&h.data.prescription&&h.data.prescription.hospital;
+      if(hp&&!seen[hp]){seen[hp]=1;places.push(hp);}
+    });
+    if(places.length===0){pw.style.display='none';}
+    else{
+      pw.style.display='block';
+      pl.innerHTML=places.slice(0,6).map(function(p){
+        return '<span style="background:var(--mint-lt);border:1px solid var(--mint-bd);color:var(--navy);font-size:11px;font-weight:700;padding:4px 9px;border-radius:20px">'+esc(p)+'</span>';
+      }).join('');
+    }
+  }
   var wrap=document.getElementById('home-recent'),list=document.getElementById('home-recent-list');
   if(wrap&&list){
     var hist=(DB.history||[]).slice(0,2);
@@ -1375,10 +1436,11 @@ function renderHomeDash(){
       wrap.style.display='block';
       list.innerHTML=hist.map(function(it,i){
         var names=(it.drugs||[]).slice(0,3).join(', ')||'분석 결과';
+        var hosp=(it.data&&it.data.prescription&&it.data.prescription.hospital)||'';
         return '<div onclick="openHistDetail('+i+',\'\')" style="background:var(--wh);border:1px solid var(--bd);border-radius:12px;padding:12px 13px;cursor:pointer;display:flex;align-items:center;gap:10px">'
           +'<div style="width:34px;height:34px;border-radius:10px;background:var(--mint-lt);display:flex;align-items:center;justify-content:center;font-size:17px;flex-shrink:0">💊</div>'
           +'<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:800;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+esc(names)+'</div>'
-          +'<div style="font-size:11px;color:var(--t3);margin-top:1px">'+esc(it.date||'')+'</div></div>'
+          +'<div style="font-size:11px;color:var(--t3);margin-top:1px">'+(hosp?esc(hosp)+' · ':'')+esc(it.date||'')+'</div></div>'
           +'<div style="color:var(--t3);font-size:14px">›</div></div>';
       }).join('');
     }
